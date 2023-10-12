@@ -27,14 +27,32 @@ int main(int argc, char** argv)
 		return -2;
 	}
 	// Vertices (Position (vec2), Color (vec3))
+	//float vertices[] = {
+	//	  -1.0f, -1.0f, 1.0f, 0.0f, 0.0f, // Vertex 1: Red
+	//	 -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // Vertex 2 (X, Y)
+	//	  0.0f,  -1.0f, 0.0f, 0.0f, 1.0f  // Vertex 3 (X, Y)
+	//	// 0.7f,  0.0f,  // Vertex 3 (X, Y)
+	//	//  0.0f, -0.3f // Vertex 1 (X, Y)
+	//	//-0.7f,  0.0f, // Vertex 2 (X, Y)
+	//};
+
+	// square vertices
 	float vertices[] = {
-		  -1.0f, -1.0f, 1.0f, 0.0f, 0.0f, // Vertex 1: Red
-		 -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // Vertex 2 (X, Y)
-		  0.0f,  -1.0f, 0.0f, 0.0f, 1.0f  // Vertex 3 (X, Y)
-		// 0.7f,  0.0f,  // Vertex 3 (X, Y)
-		//  0.0f, -0.3f // Vertex 1 (X, Y)
-		//-0.7f,  0.0f, // Vertex 2 (X, Y)
+	0.0f,  0.5f, 1.0f, 1.0f, 0.0f, // top right
+   -0.7f,  0.0f, 1.0f, 1.0f, 0.0f,// bottom right
+    0.0f, -0.5f, 1.0f, 1.0f, 0.0f,// bottom left
+    0.7f,  0.0f, 1.0f, 1.0f, 0.0f,// top left
 	};
+
+	unsigned int indices[] = {  // note that we start from 0!
+		0, 1, 3,   // first triangle
+		1, 2, 3    // second triangle
+	};
+
+	GLuint ebo; // Element buffer object
+	glGenBuffers(1, &ebo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	GLuint vbo; // Vertex buffer object
 	glGenBuffers(1, &vbo); // Generate 1 buffer, store its id in vbo variable
@@ -130,10 +148,10 @@ int main(int argc, char** argv)
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 
-	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+	glClearColor(0.0f, 0.6f, 0.3f, 1.0f);
 
 	//int start = SDL_GetTicks();
-
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	SDL_Event windowEvent;
 	while (true)
 	{
@@ -149,8 +167,9 @@ int main(int argc, char** argv)
 		glClear(GL_COLOR_BUFFER_BIT);
 		
 		glUseProgram(shaderProgram);
-		glBindVertexArray(vao);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		SDL_GL_SwapWindow(window);
 	}
