@@ -26,11 +26,11 @@ int main(int argc, char** argv)
 		SDL_Quit();
 		return -2;
 	}
-
+	// Vertices (Position (vec2), Color (vec3))
 	float vertices[] = {
-		  0.0f, 0.3f, // Vertex 1 (X, Y)
-		 -0.7f,  0.0f, // Vertex 2 (X, Y)
-		  0.7f,  0.0f,  // Vertex 3 (X, Y)
+		  -1.0f, -1.0f, 1.0f, 0.0f, 0.0f, // Vertex 1: Red
+		 -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // Vertex 2 (X, Y)
+		  0.0f,  -1.0f, 0.0f, 0.0f, 1.0f  // Vertex 3 (X, Y)
 		// 0.7f,  0.0f,  // Vertex 3 (X, Y)
 		//  0.0f, -0.3f // Vertex 1 (X, Y)
 		//-0.7f,  0.0f, // Vertex 2 (X, Y)
@@ -51,17 +51,17 @@ int main(int argc, char** argv)
 	// 2. copy our vertices array in a buffer for OpenGL to use
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	// 3. then set our vertex attributes pointers
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
 
 	const char* vertexShaderSource = R"glsl(
 		#version 330 core
 
 		in vec2 position;
+		in vec3 color;
+		out vec3 Color;
 
 		void main()
 		{
+			Color = color;
 			gl_Position = vec4(position, 0.0, 1.0);
 		}
 		)glsl";
@@ -84,11 +84,12 @@ int main(int argc, char** argv)
 	// Fragment shader stuff
 
 	const char* fragmentShaderSource = R"glsl(#version 330 core
+	in vec3 Color;
 	out vec4 outColor;
 
 	void main()
 	{
-		outColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
+		outColor = vec4(Color, 1.0f);
 	}
 	)glsl";
 
@@ -115,11 +116,23 @@ int main(int argc, char** argv)
 	glAttachShader(shaderProgram, fragmentShader);
 	glLinkProgram(shaderProgram);
 
+	// 3. then set our vertex attributes pointers
+	GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
+	glEnableVertexAttribArray(posAttrib);
+	glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), 0);
+
+	GLint colorAttrib = glGetAttribLocation(shaderProgram, "color");
+	glEnableVertexAttribArray(colorAttrib);										// offset, color starts after 2 floats				
+	glVertexAttribPointer(colorAttrib, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)( 2* sizeof(float) ));
+
 	glUseProgram(shaderProgram);
 
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 
+	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+
+	//int start = SDL_GetTicks();
 
 	SDL_Event windowEvent;
 	while (true)
@@ -128,8 +141,11 @@ int main(int argc, char** argv)
 		{
 			if (windowEvent.type == SDL_QUIT) break;
 		}
+		
+		//int now = SDL_GetTicks();
+		//float time = (now - start) / 1000.0f;
+		//glUniform3f(uniColor, (sin(time * 4.0f) + 1.0f) / 2.0f, 0.0f, 2.0f);
 
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 		
 		glUseProgram(shaderProgram);
