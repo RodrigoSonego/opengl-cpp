@@ -2,15 +2,12 @@
 #include <glad/glad.h>
 #include <SDL.h>
 
+bool couldCompileShader(GLuint& shaderToVerify, char(&outInfoLog)[512]);
+SDL_Window* startOpenGLWindow();
+
 int main(int argc, char** argv)
 {
-	SDL_Init(SDL_INIT_VIDEO);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-
-	SDL_Window* window = SDL_CreateWindow("OpenGL", 100, 100, 800, 600, SDL_WINDOW_OPENGL);
+	SDL_Window* window = startOpenGLWindow();
 	if (window == nullptr)
 	{
 		std::cout << "Failed to create SDL Window" << std::endl;
@@ -89,16 +86,11 @@ int main(int argc, char** argv)
 
 	glCompileShader(vertexShader);
 
-	//check for errors
-	GLint success;
 	char infoLog[512];
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success); // checks for shader compile status
-
-	if (!success) {
-		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+	bool couldCompileVert = couldCompileShader(vertexShader, infoLog);
+	if (!couldCompileVert) {
+		std::cout << "COULD NOT COMPILE VERTEX SHADERS";
 	}
-
 	// Fragment shader stuff
 
 	const char* fragmentShaderSource = R"glsl(#version 330 core
@@ -116,15 +108,10 @@ int main(int argc, char** argv)
 	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
 	glCompileShader(fragmentShader);
 
-	//check for errors AGAIN
-	// TODO: Turn to method
-	GLint success2;
-	char infoLog2[512];
-	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success2); // checks for shader compile status
-
-	if (!success2) {
-		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+	//retutilizing infolog cause dont care
+	bool couldCompileFrag = couldCompileShader(fragmentShader, infoLog);
+	if (!couldCompileFrag) {
+		std::cout << "COULD NOT COMPILE FRAGMENT SHADERS";
 	}
 
 	GLuint shaderProgram;
@@ -178,4 +165,27 @@ int main(int argc, char** argv)
 	SDL_DestroyWindow(window);
 	SDL_Quit();
 	return 0;
+}
+
+bool couldCompileShader(GLuint &shaderToVerify, char(&outInfoLog)[512]) {
+	GLint success;
+	glGetShaderiv(shaderToVerify, GL_COMPILE_STATUS, &success); // checks for shader compile status
+
+	if (!success) {
+		glGetShaderInfoLog(shaderToVerify, 512, NULL, outInfoLog);
+		std::cout << "ERROR::SHADER::COMPILATION_FAILED\n" << outInfoLog << std::endl;
+	}
+
+	return success;
+}
+
+SDL_Window* startOpenGLWindow() {
+	SDL_Init(SDL_INIT_VIDEO);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+
+	SDL_Window* window = SDL_CreateWindow("OpenGL", 100, 100, 800, 600, SDL_WINDOW_OPENGL);
+	return window;
 }
