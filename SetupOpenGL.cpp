@@ -1,6 +1,7 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <SDL.h>
+#include "dependencies/stb_image/stb_image.h"
 
 bool couldCompileShader(GLuint& shaderToVerify, char(&outInfoLog)[512]);
 SDL_Window* startOpenGLWindow();
@@ -35,10 +36,11 @@ int main(int argc, char** argv)
 
 	// square vertices
 	float vertices[] = {
-	0.0f,  0.5f, 1.0f, 1.0f, 0.0f, // top right
-   -0.7f,  0.0f, 1.0f, 1.0f, 0.0f,// bottom right
-    0.0f, -0.5f, 1.0f, 1.0f, 0.0f,// bottom left
-    0.7f,  0.0f, 1.0f, 1.0f, 0.0f,// top left
+	// X, Y			// r, g, b			// Texture X, Y
+	0.5f,  0.5f,    1.0f, 1.0f, 0.0f,    1.0f, 1.0f, // top right
+    0.5f, -0.5f,    1.0f, 1.0f, 0.0f,    1.0f, 0.0f, // bottom right
+   -0.5f, -0.5f,    0.0f, 0.0f, 1.0f,    0.0f, 0.0f, // bottom left
+   -0.5f,  0.5f,    1.0f, 1.0f, 0.0f,    0.0f, 1.0f// top left
 	};
 
 	unsigned int indices[] = {  // note that we start from 0!
@@ -72,11 +74,15 @@ int main(int argc, char** argv)
 
 		in vec2 position;
 		in vec3 color;
+		in vec2 texCoord;
+
 		out vec3 Color;
+		out vec2 TexCoord;
 
 		void main()
 		{
 			Color = color;
+			TexCoord = texCoord;
 			gl_Position = vec4(position, 0.0, 1.0);
 		}
 		)glsl";
@@ -95,11 +101,19 @@ int main(int argc, char** argv)
 
 	const char* fragmentShaderSource = R"glsl(#version 330 core
 	in vec3 Color;
+	in vec2 TexCoord;
+
 	out vec4 outColor;
+
+	uniform sampler2D outTexture;
+	uniform sampler2D outTexture2;
+
 
 	void main()
 	{
-		outColor = vec4(Color, 1.0f);
+		vec4 colTex1 = texture(outTexture, TexCoord);
+		vec4 colTex2 = texture(outTexture2, TexCoord);
+		outColor = mix(colTex1, colTex2, 0.5);
 	}
 	)glsl";
 
@@ -121,16 +135,74 @@ int main(int argc, char** argv)
 	glAttachShader(shaderProgram, fragmentShader);
 	glLinkProgram(shaderProgram);
 
+#pragma region Vertex Attribs
 	// 3. then set our vertex attributes pointers
 	GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
 	glEnableVertexAttribArray(posAttrib);
-	glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), 0);
+	glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(float), 0);
 
 	GLint colorAttrib = glGetAttribLocation(shaderProgram, "color");
 	glEnableVertexAttribArray(colorAttrib);										// offset, color starts after 2 floats				
-	glVertexAttribPointer(colorAttrib, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)( 2* sizeof(float) ));
+	glVertexAttribPointer(colorAttrib, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)( 2* sizeof(float) ));
+
+	GLint texCoordAttrib = glGetAttribLocation(shaderProgram, "texCoord");
+	glEnableVertexAttribArray(texCoordAttrib);
+	glVertexAttribPointer(texCoordAttrib, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(5 * sizeof(float)));
+
+#pragma endregion
+
+#pragma region Texture
+
+	stbi_set_flip_vertically_on_load(true);
+
+	GLuint containerTex;
+	glGenTextures(1, &containerTex);
+	glBindTexture(GL_TEXTURE_2D, containerTex);
+
+	// set the texture wrapping/filtering options (on the currently bound texture object)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	int width, height, nChannels;
+	unsigned char* data = stbi_load("res/textures/container.jpg", &width, &height, &nChannels, 0);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else {
+		std::cout << "Failed to load texture!";
+	}
+
+	stbi_image_free(data);
+
+
+	GLuint faceTex;
+	glGenTextures(1, &faceTex);
+	glBindTexture(GL_TEXTURE_2D, faceTex);
+
+	// set the texture wrapping/filtering options (on the currently bound texture object)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	data = stbi_load("res/textures/awesomeface.png", &width, &height, &nChannels, 0);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	stbi_image_free(data);
+
+#pragma endregion
 
 	glUseProgram(shaderProgram);
+
+	GLint tex1Location = glGetUniformLocation(shaderProgram, "outTexture");
+	GLint tex2Location = glGetUniformLocation(shaderProgram, "outTexture2");
+
+	glUniform1i(tex1Location, 0);
+	glUniform1i(tex2Location, 1);
 
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
@@ -155,6 +227,11 @@ int main(int argc, char** argv)
 		
 		glUseProgram(shaderProgram);
 		
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, containerTex);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, faceTex);
+
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
