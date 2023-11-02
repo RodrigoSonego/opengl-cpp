@@ -43,18 +43,63 @@ int main(int argc, char** argv)
 	//};
 
 	// square vertices
-	float vertices[] = {
-	// X, Y			// r, g, b			// Texture X, Y
-	0.5f,  0.5f,    1.0f, 1.0f, 0.0f,    1.0f, 1.0f, // top right
-    0.5f, -0.5f,    1.0f, 1.0f, 0.0f,    1.0f, 0.0f, // bottom right
-   -0.5f, -0.5f,    0.0f, 0.0f, 1.0f,    0.0f, 0.0f, // bottom left
-   -0.5f,  0.5f,    1.0f, 1.0f, 0.0f,    0.0f, 1.0f// top left
-	};
+	//float vertices[] = {
+	//// X, Y			// r, g, b			// Texture X, Y
+	//0.5f,  0.5f,    1.0f, 1.0f, 0.0f,    1.0f, 1.0f, // top right
+ //   0.5f, -0.5f,    1.0f, 1.0f, 0.0f,    1.0f, 0.0f, // bottom right
+ //  -0.5f, -0.5f,    0.0f, 0.0f, 1.0f,    0.0f, 0.0f, // bottom left
+ //  -0.5f,  0.5f,    1.0f, 1.0f, 0.0f,    0.0f, 1.0f// top left
+	//};
 
 	unsigned int indices[] = {  // note that we start from 0!
 		0, 1, 3,   // first triangle
 		1, 2, 3    // second triangle
 	};
+
+	float vertices[] = {
+	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+	 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	 0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	 0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+	};
+
 
 	GLuint ebo; // Element buffer object
 	glGenBuffers(1, &ebo);
@@ -80,7 +125,7 @@ int main(int argc, char** argv)
 	const char* vertexShaderSource = R"glsl(
 		#version 330 core
 
-		in vec2 position;
+		in vec3 position;
 		in vec3 color;
 		in vec2 texCoord;
 
@@ -97,7 +142,7 @@ int main(int argc, char** argv)
 		{
 			Color = color;
 			TexCoord = texCoord;
-			gl_Position = projection * view * model * transform * vec4(position, 0.0, 1.0);
+			gl_Position = projection * view * model * transform * vec4(position, 1.0);
 		}
 		)glsl";
 
@@ -153,15 +198,15 @@ int main(int argc, char** argv)
 	// 3. then set our vertex attributes pointers
 	GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
 	glEnableVertexAttribArray(posAttrib);
-	glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(float), 0);
+	glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 
-	GLint colorAttrib = glGetAttribLocation(shaderProgram, "color");
-	glEnableVertexAttribArray(colorAttrib);										// offset, color starts after 2 floats				
-	glVertexAttribPointer(colorAttrib, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)( 2* sizeof(float) ));
+	//GLint colorAttrib = glGetAttribLocation(shaderProgram, "color");
+	//glEnableVertexAttribArray(colorAttrib);
+	//glVertexAttribPointer(colorAttrib, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
 
 	GLint texCoordAttrib = glGetAttribLocation(shaderProgram, "texCoord");
 	glEnableVertexAttribArray(texCoordAttrib);
-	glVertexAttribPointer(texCoordAttrib, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(5 * sizeof(float)));
+	glVertexAttribPointer(texCoordAttrib, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 
 #pragma endregion
 
@@ -250,6 +295,21 @@ int main(int argc, char** argv)
 
 	glClearColor(0.0f, 0.6f, 0.3f, 1.0f);
 
+	glEnable(GL_DEPTH_TEST);
+
+	glm::vec3 cubePositions[] = {
+	glm::vec3(0.0f,  0.0f,  0.0f),
+	glm::vec3(2.0f,  5.0f, -15.0f),
+	glm::vec3(-1.5f, -2.2f, -2.5f),
+	glm::vec3(-3.8f, -2.0f, -12.3f),
+	glm::vec3(2.4f, -0.4f, -3.5f),
+	glm::vec3(-1.7f,  3.0f, -7.5f),
+	glm::vec3(1.3f, -2.0f, -2.5f),
+	glm::vec3(1.5f,  2.0f, -2.5f),
+	glm::vec3(1.5f,  0.2f, -1.5f),
+	glm::vec3(-1.3f,  1.0f, -1.5f)
+	};
+
 	int start = SDL_GetTicks();
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	SDL_Event windowEvent;
@@ -259,11 +319,17 @@ int main(int argc, char** argv)
 		{
 			if (windowEvent.type == SDL_QUIT) break;
 		}
-		
+	
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 		int now = SDL_GetTicks();
 		float time = (now - start) / 1000.0f;
 		//glUniform3f(uniColor, (sin(time * 4.0f) + 1.0f) / 2.0f, 0.0f, 2.0f);
 		
+		view = glm::mat4(1.0f);
+		view = glm::translate(view, glm::vec3(0.f, 0.f, -time * 0.5f));
+		view = glm::rotate(view, time * 0.2f, glm::vec3(0.f, 0.f, 0.3f));
+		glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(view));
 
 		glClear(GL_COLOR_BUFFER_BIT);
 		
@@ -275,7 +341,20 @@ int main(int argc, char** argv)
 		glBindTexture(GL_TEXTURE_2D, faceTex);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+
+		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		//glDrawArrays(GL_TRIANGLES, 0, 36);
+		for (unsigned int i = 0; i < 10; i++)
+		{
+			glm::mat4 model(1.0f);
+			model = glm::translate(model, cubePositions[i]);
+			float angle = 20.0f * i;
+			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+			glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
+
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
 
 		SDL_GL_SwapWindow(window);
 	}
