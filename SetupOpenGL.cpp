@@ -3,6 +3,10 @@
 #include <SDL.h>
 #include "dependencies/stb_image/stb_image.h"
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 bool couldCompileShader(GLuint& shaderToVerify, char(&outInfoLog)[512]);
 SDL_Window* startOpenGLWindow();
 
@@ -79,11 +83,13 @@ int main(int argc, char** argv)
 		out vec3 Color;
 		out vec2 TexCoord;
 
+		uniform mat4 transform;
+
 		void main()
 		{
 			Color = color;
 			TexCoord = texCoord;
-			gl_Position = vec4(position, 0.0, 1.0);
+			gl_Position = transform * vec4(position, 0.0, 1.0);
 		}
 		)glsl";
 
@@ -207,9 +213,16 @@ int main(int argc, char** argv)
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 
+	glm::mat4 transMat(1.0f);
+	transMat = glm::rotate(transMat, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+	transMat = glm::scale(transMat, glm::vec3(0.5, 0.5, 0.5));
+
+	GLuint transformLoc = glGetUniformLocation(shaderProgram, "transform");
+	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transMat));
+
 	glClearColor(0.0f, 0.6f, 0.3f, 1.0f);
 
-	//int start = SDL_GetTicks();
+	int start = SDL_GetTicks();
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	SDL_Event windowEvent;
 	while (true)
@@ -219,9 +232,15 @@ int main(int argc, char** argv)
 			if (windowEvent.type == SDL_QUIT) break;
 		}
 		
-		//int now = SDL_GetTicks();
-		//float time = (now - start) / 1000.0f;
+		int now = SDL_GetTicks();
+		float time = (now - start) / 1000.0f;
 		//glUniform3f(uniColor, (sin(time * 4.0f) + 1.0f) / 2.0f, 0.0f, 2.0f);
+
+		glm::mat4 trans(1.0f);
+		trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
+		trans = glm::rotate(trans, time, glm::vec3(0.0f, 1.0f, 1.0f));
+		trans = glm::scale(trans, glm::vec3(1.3f, 1.3f, 0.0f) * sin(time));
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 
 		glClear(GL_COLOR_BUFFER_BIT);
 		
