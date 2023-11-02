@@ -7,6 +7,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#define SCREEN_WIDTH 800
+#define SCREEN_HEIGHT 600
+
+
 bool couldCompileShader(GLuint& shaderToVerify, char(&outInfoLog)[512]);
 SDL_Window* startOpenGLWindow();
 
@@ -85,11 +89,15 @@ int main(int argc, char** argv)
 
 		uniform mat4 transform;
 
+		uniform mat4 model;
+		uniform mat4 view;
+		uniform mat4 projection;
+
 		void main()
 		{
 			Color = color;
 			TexCoord = texCoord;
-			gl_Position = transform * vec4(position, 0.0, 1.0);
+			gl_Position = projection * view * model * transform * vec4(position, 0.0, 1.0);
 		}
 		)glsl";
 
@@ -214,11 +222,31 @@ int main(int argc, char** argv)
 	glDeleteShader(fragmentShader);
 
 	glm::mat4 transMat(1.0f);
-	transMat = glm::rotate(transMat, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
-	transMat = glm::scale(transMat, glm::vec3(0.5, 0.5, 0.5));
+	//transMat = glm::rotate(transMat, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+	//transMat = glm::scale(transMat, glm::vec3(0.5, 0.5, 0.5));
 
 	GLuint transformLoc = glGetUniformLocation(shaderProgram, "transform");
 	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transMat));
+
+	glm::mat4 model(1.0f);
+	model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0, 0.0, 0.0));
+
+	glm::mat4 view = glm::mat4(1.0f);
+	// note that we're translating the scene in the reverse direction of where we want to move
+	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+
+	glm::mat4 projection;
+	float ratio = SCREEN_WIDTH / SCREEN_HEIGHT;
+	projection = glm::perspective(glm::radians(45.0f), ratio, 0.1f, 100.0f);
+
+	GLuint modelLocation = glGetUniformLocation(shaderProgram, "model");
+	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
+
+	GLuint viewLocation = glGetUniformLocation(shaderProgram, "view");
+	glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(view));
+
+	GLuint projectionLocation = glGetUniformLocation(shaderProgram, "projection");
+	glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));
 
 	glClearColor(0.0f, 0.6f, 0.3f, 1.0f);
 
@@ -235,12 +263,7 @@ int main(int argc, char** argv)
 		int now = SDL_GetTicks();
 		float time = (now - start) / 1000.0f;
 		//glUniform3f(uniColor, (sin(time * 4.0f) + 1.0f) / 2.0f, 0.0f, 2.0f);
-
-		glm::mat4 trans(1.0f);
-		trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
-		trans = glm::rotate(trans, time, glm::vec3(0.0f, 1.0f, 1.0f));
-		trans = glm::scale(trans, glm::vec3(1.3f, 1.3f, 0.0f) * sin(time));
-		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+		
 
 		glClear(GL_COLOR_BUFFER_BIT);
 		
@@ -282,6 +305,6 @@ SDL_Window* startOpenGLWindow() {
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
 	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
-	SDL_Window* window = SDL_CreateWindow("OpenGL", 100, 100, 800, 600, SDL_WINDOW_OPENGL);
+	SDL_Window* window = SDL_CreateWindow("OpenGL", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL);
 	return window;
 }
