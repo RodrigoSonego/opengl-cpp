@@ -10,9 +10,21 @@
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+// gore
+float lastX = 400, lastY = 300;
+float pitch;
+float yaw = -90.0f;
+
+float fov = 45.0f;
 
 bool couldCompileShader(GLuint& shaderToVerify, char(&outInfoLog)[512]);
 SDL_Window* startOpenGLWindow();
+void processMouseInput(SDL_Event ev);
+static void processKeyboard(float deltaTime);
 
 int main(int argc, char** argv)
 {
@@ -273,16 +285,28 @@ int main(int argc, char** argv)
 	GLuint transformLoc = glGetUniformLocation(shaderProgram, "transform");
 	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transMat));
 
+	// // // // CAMERA STUFF // // // //
+	glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 5.0f);
+	glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
+
+	glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+	glm::vec3 cameraRight = glm::normalize(glm::cross(worldUp, cameraDirection));
+
+
+	glm::mat4 view;
+	view = glm::lookAt(cameraPos, cameraTarget, worldUp);
+
+
 	glm::mat4 model(1.0f);
 	model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0, 0.0, 0.0));
 
-	glm::mat4 view = glm::mat4(1.0f);
+	//glm::mat4 view = glm::mat4(1.0f);
 	// note that we're translating the scene in the reverse direction of where we want to move
 	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
 
 	glm::mat4 projection;
 	float ratio = SCREEN_WIDTH / SCREEN_HEIGHT;
-	projection = glm::perspective(glm::radians(45.0f), ratio, 0.1f, 100.0f);
+	projection = glm::perspective(glm::radians(fov), ratio, 0.1f, 100.0f);
 
 	GLuint modelLocation = glGetUniformLocation(shaderProgram, "model");
 	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
@@ -312,24 +336,38 @@ int main(int argc, char** argv)
 
 	int start = SDL_GetTicks();
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+	float deltaTime = 0.0f;	// Time between current frame and last frame
+	float lastFrameTime = SDL_GetTicks(); // Time of last frame
+
 	SDL_Event windowEvent;
 	while (true)
 	{
-		if (SDL_PollEvent(&windowEvent))
-		{
+		int now = SDL_GetTicks();
+
+		float deltaTime = (now - lastFrameTime) / 1000.0f;
+		lastFrameTime = now;
+
+		// Event loop
+		while (SDL_PollEvent(&windowEvent) != 0) {
 			if (windowEvent.type == SDL_QUIT) break;
+
+			processMouseInput(windowEvent);
+			processKeyboard(deltaTime);
 		}
-	
+		
+		SDL_ShowCursor(SDL_DISABLE);
+		SDL_CaptureMouse(SDL_TRUE);
+
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		int now = SDL_GetTicks();
-		float time = (now - start) / 1000.0f;
+
 		//glUniform3f(uniColor, (sin(time * 4.0f) + 1.0f) / 2.0f, 0.0f, 2.0f);
-		
-		view = glm::mat4(1.0f);
-		view = glm::translate(view, glm::vec3(0.f, 0.f, -time * 0.5f));
-		view = glm::rotate(view, time * 0.2f, glm::vec3(0.f, 0.f, 0.3f));
+		view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 		glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(view));
+
+		projection = glm::perspective(glm::radians(fov), ratio, 0.1f, 100.0f);
+		glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));
 
 		glClear(GL_COLOR_BUFFER_BIT);
 		
@@ -386,4 +424,69 @@ SDL_Window* startOpenGLWindow() {
 
 	SDL_Window* window = SDL_CreateWindow("OpenGL", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL);
 	return window;
+}
+
+void processMouseInput(SDL_Event ev)
+{
+	if (ev.type == SDL_MOUSEMOTION) {
+		float xPos = ev.button.x;
+		float yPos = ev.button.y;
+
+		float xOffset = xPos - lastX;
+		float yOffset = lastY - yPos;
+
+		lastX = xPos;
+		lastY = yPos;
+
+		float sensitivity = 0.05f;
+		xOffset *= sensitivity;
+		yOffset *= sensitivity;
+
+		yaw += xOffset;
+		pitch += yOffset;
+
+		if (pitch > 89.0f)
+			pitch = 89.0f;
+		if (pitch < -89.0f)
+			pitch = -89.0f;
+
+		static bool firstMouse = true;
+		if (firstMouse)
+		{
+			firstMouse = false;
+			lastX = xPos;
+			lastY = yPos;
+		}
+
+		glm::vec3 front;
+		front.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
+		front.y = sin(glm::radians(pitch));
+		front.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));
+		cameraFront = glm::normalize(front);
+	}
+
+	if (ev.type == SDL_MOUSEWHEEL)
+	{
+		if (fov >= 1.0f && fov <= 45.0f)
+			fov -= ev.wheel.y;
+		if (fov <= 1.0f)
+			fov = 1.0f;
+		if (fov >= 45.0f)
+			fov = 45.0f;
+	}
+}
+
+void processKeyboard(float deltaTime)
+{
+	float cameraSpeed = 4.f * deltaTime; // adjust accordingly
+	const Uint8* keyState;
+	keyState = SDL_GetKeyboardState(NULL);
+	if (keyState[SDL_SCANCODE_W])
+		cameraPos += cameraSpeed * cameraFront;
+	if (keyState[SDL_SCANCODE_S])
+		cameraPos -= cameraSpeed * cameraFront;
+	if (keyState[SDL_SCANCODE_A])
+		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+	if (keyState[SDL_SCANCODE_D])
+		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 }
