@@ -132,10 +132,18 @@
   <ItemGroup>
     <ClCompile Include="dependencies\glad\src\glad.c" />
     <ClCompile Include="dependencies\stb_image\stb_image.cpp" />
+    <ClCompile Include="FileReader.cpp" />
     <ClCompile Include="SetupOpenGL.cpp" />
+    <ClCompile Include="Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dependencies\stb_image\stb_image.h" />
+    <ClInclude Include="FileReader.h" />
+    <ClInclude Include="Shader.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="fragment.frag" />
+    <None Include="vertex.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

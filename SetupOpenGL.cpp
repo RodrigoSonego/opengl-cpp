@@ -7,6 +7,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "Shader.h"
+
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 
@@ -44,6 +46,8 @@ int main(int argc, char** argv)
 		SDL_Quit();
 		return -2;
 	}
+
+	Shader shader("vertex.vert", "fragment.frag");
 	// Vertices (Position (vec2), Color (vec3))
 	//float vertices[] = {
 	//	  -1.0f, -1.0f, 1.0f, 0.0f, 0.0f, // Vertex 1: Red
