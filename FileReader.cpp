@@ -27,9 +27,3 @@ char* FileReader::readTextFile(const char* pathToFile)
 
     return _strdup(fileContent.c_str());
 }
-
-//std::ifstream FileReader::readFile(const char* pathToFile)
-//{
-    
-
-//}

@@ -1,7 +1,10 @@
 #include "Shader.h"
 #include "FileReader.h"
-#include <fstream>
 #include "glad/glad.h"
+#include <fstream>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath)
 {	
@@ -9,14 +12,27 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
 	
 	char* vertexCode = reader.readTextFile(vertexPath);
 
-	std::cout << vertexCode;
-	//const char* fragmentCode = reader.readTextFile(fragmentPath);
+	char* fragmentCode = reader.readTextFile(fragmentPath);
 
-	//compileAndLinkShader(vertexCode, fragmentCode);
+	compileAndLinkShader(vertexCode, fragmentCode);
 }
 
 void Shader::use()
 {
+	glUseProgram(id);
+}
+
+void Shader::enableVertexAttribArray(const char* name, int size, int stride, int offset)
+{
+	GLint attribLocation = glGetAttribLocation(id, name);
+	glEnableVertexAttribArray(attribLocation);
+	glVertexAttribPointer(attribLocation, size, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void*)(offset * sizeof(float)));
+}
+
+void Shader::setMat4(const char* name, glm::mat4 mat) const
+{
+	GLuint transformLoc = glGetUniformLocation(id, name);
+	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(mat));
 }
 
 void Shader::compileAndLinkShader(const char* vertexCode, const char* fragmentCode)

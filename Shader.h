@@ -10,12 +10,19 @@ public:
 
 	void use();
 
-	void setBool(const char* name, bool value) const;
-	void setInt(const char* name, int value) const;
-	void setFloat(const char* name, float value) const;
-	void setUniform(const char* name, glm::f32 value) const;
+	/// <summary>
+///		Used to enable a single vertex attrib array, suposes values are floats
+/// </summary>
+/// <param name="name">Attribute name</param>
+/// <param name="size">Size of array</param>
+/// <param name="stride">Space between consecutive vertex attributes</param>
+/// <param name="offset">Offset where data begins in buffer</param>
+	void enableVertexAttribArray(const char* name, int size, int stride, int offset);
+
+	void setMat4(const char* name, glm::mat4 mat) const;
+
 
 private:
-	void compileAndLinkShader(const char* vertexCode, const char* fragmentCode);
+	void compileAndLinkShader(const char* vertexCode, const char* fragmentCode) ;
 };
 

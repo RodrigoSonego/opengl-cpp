@@ -46,8 +46,6 @@ int main(int argc, char** argv)
 		SDL_Quit();
 		return -2;
 	}
-
-	Shader shader("vertex.vert", "fragment.frag");
 	// Vertices (Position (vec2), Color (vec3))
 	//float vertices[] = {
 	//	  -1.0f, -1.0f, 1.0f, 0.0f, 0.0f, // Vertex 1: Red
@@ -135,95 +133,16 @@ int main(int argc, char** argv)
 	glBindVertexArray(vao);
 
 	// 2. copy our vertices array in a buffer for OpenGL to use
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	const char* vertexShaderSource = R"glsl(
-		#version 330 core
-
-		in vec3 position;
-		in vec3 color;
-		in vec2 texCoord;
-
-		out vec3 Color;
-		out vec2 TexCoord;
-
-		uniform mat4 transform;
-
-		uniform mat4 model;
-		uniform mat4 view;
-		uniform mat4 projection;
-
-		void main()
-		{
-			Color = color;
-			TexCoord = texCoord;
-			gl_Position = projection * view * model * transform * vec4(position, 1.0);
-		}
-		)glsl";
-
-	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-
-	glCompileShader(vertexShader);
-
-	char infoLog[512];
-	bool couldCompileVert = couldCompileShader(vertexShader, infoLog);
-	if (!couldCompileVert) {
-		std::cout << "COULD NOT COMPILE VERTEX SHADERS";
-	}
-	// Fragment shader stuff
-
-	const char* fragmentShaderSource = R"glsl(#version 330 core
-	in vec3 Color;
-	in vec2 TexCoord;
-
-	out vec4 outColor;
-
-	uniform sampler2D outTexture;
-	uniform sampler2D outTexture2;
-
-
-	void main()
-	{
-		vec4 colTex1 = texture(outTexture, TexCoord);
-		vec4 colTex2 = texture(outTexture2, TexCoord);
-		outColor = mix(colTex1, colTex2, 0.5);
-	}
-	)glsl";
-
-	
-	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-	glCompileShader(fragmentShader);
-
-	//retutilizing infolog cause dont care
-	bool couldCompileFrag = couldCompileShader(fragmentShader, infoLog);
-	if (!couldCompileFrag) {
-		std::cout << "COULD NOT COMPILE FRAGMENT SHADERS";
-	}
-
-	GLuint shaderProgram;
-	shaderProgram = glCreateProgram();
-
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
+	//glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	Shader shader("vertex.vert", "fragment.frag");
 
 #pragma region Vertex Attribs
 	// 3. then set our vertex attributes pointers
-	GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
-	glEnableVertexAttribArray(posAttrib);
-	glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 
-	//GLint colorAttrib = glGetAttribLocation(shaderProgram, "color");
-	//glEnableVertexAttribArray(colorAttrib);
-	//glVertexAttribPointer(colorAttrib, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+	shader.enableVertexAttribArray("position", 3, 5, 0);
 
-	GLint texCoordAttrib = glGetAttribLocation(shaderProgram, "texCoord");
-	glEnableVertexAttribArray(texCoordAttrib);
-	glVertexAttribPointer(texCoordAttrib, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-
+	shader.enableVertexAttribArray("texCoord", 2, 5, 3);
 #pragma endregion
 
 #pragma region Texture
@@ -271,23 +190,21 @@ int main(int argc, char** argv)
 
 #pragma endregion
 
-	glUseProgram(shaderProgram);
+	shader.use();
 
-	GLint tex1Location = glGetUniformLocation(shaderProgram, "outTexture");
-	GLint tex2Location = glGetUniformLocation(shaderProgram, "outTexture2");
+	//GLint tex1Location = glGetUniformLocation(shaderProgram, "outTexture");
+	//GLint tex2Location = glGetUniformLocation(shaderProgram, "outTexture2");
 
-	glUniform1i(tex1Location, 0);
-	glUniform1i(tex2Location, 1);
-
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
+	//glUniform1i(tex1Location, 0);
+	//glUniform1i(tex2Location, 1);
 
 	glm::mat4 transMat(1.0f);
 	//transMat = glm::rotate(transMat, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
 	//transMat = glm::scale(transMat, glm::vec3(0.5, 0.5, 0.5));
 
-	GLuint transformLoc = glGetUniformLocation(shaderProgram, "transform");
-	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transMat));
+	shader.setMat4("transform", transMat);
+	//GLuint transformLoc = glGetUniformLocation(shaderProgram, "transform");
+	//glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transMat));
 
 	// // // // CAMERA STUFF // // // //
 	glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 5.0f);
@@ -312,14 +229,17 @@ int main(int argc, char** argv)
 	float ratio = SCREEN_WIDTH / SCREEN_HEIGHT;
 	projection = glm::perspective(glm::radians(fov), ratio, 0.1f, 100.0f);
 
-	GLuint modelLocation = glGetUniformLocation(shaderProgram, "model");
-	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
+	//GLuint modelLocation = glGetUniformLocation(shaderProgram, "model");
+	//glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
+	shader.setMat4("model", model);
 
-	GLuint viewLocation = glGetUniformLocation(shaderProgram, "view");
-	glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(view));
+	//GLuint viewLocation = glGetUniformLocation(shaderProgram, "view");
+	//glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(view));
+	shader.setMat4("view", view);
 
-	GLuint projectionLocation = glGetUniformLocation(shaderProgram, "projection");
-	glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));
+	//GLuint projectionLocation = glGetUniformLocation(shaderProgram, "projection");
+	//glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));
+	shader.setMat4("projection", projection);
 
 	glClearColor(0.0f, 0.6f, 0.3f, 1.0f);
 
@@ -367,22 +287,23 @@ int main(int argc, char** argv)
 
 
 		//glUniform3f(uniColor, (sin(time * 4.0f) + 1.0f) / 2.0f, 0.0f, 2.0f);
-		view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-		glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(view));
+		//view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+		//glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(view));
+		shader.setMat4("view", view);
 
 		projection = glm::perspective(glm::radians(fov), ratio, 0.1f, 100.0f);
-		glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));
+		//glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));
+		shader.setMat4("projection", projection);
 
 		glClear(GL_COLOR_BUFFER_BIT);
 		
-		glUseProgram(shaderProgram);
+		//glUseProgram(shaderProgram);
 		
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, containerTex);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, faceTex);
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 
 
 		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -393,7 +314,8 @@ int main(int argc, char** argv)
 			model = glm::translate(model, cubePositions[i]);
 			float angle = 20.0f * i;
 			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-			glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
+			//glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
+			shader.setMat4("model", model);
 
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
