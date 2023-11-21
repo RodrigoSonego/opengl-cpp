@@ -116,23 +116,9 @@ int main(int argc, char** argv)
 	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 	};*/
 
-	//BufferController bufferControl;
-	//std::cout << "array: " << indices << std::endl;
-	//GLuint ebo = bufferControl.generateBuffer(indices);
-
 	BufferObject vbo(vertices, sizeof(vertices), BufferObject::BufferType::Array);
 	BufferObject ebo(indices, sizeof(indices), BufferObject::BufferType::ElementArray);
 
-	//GLuint ebo; // Element buffer object
-	//glGenBuffers(1, &ebo);
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-	//std::cout << ebo;
-
-	//GLuint vbo; // Vertex buffer object
-	//glGenBuffers(1, &vbo); // Generate 1 buffer, store its id in vbo variable
-	//glBindBuffer(GL_ARRAY_BUFFER, vbo); // bind vbo as a GL_ARRAY_BUFFER
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 	GLuint vao; // vertex array object
 	glGenVertexArrays(1, &vao);
