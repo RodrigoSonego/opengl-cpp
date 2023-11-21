@@ -23,6 +23,6 @@ public:
 
 
 private:
-	void compileAndLinkShader(const char* vertexCode, const char* fragmentCode) ;
+	void compileAndLinkShader(const char* vertexCode, const char* fragmentCode);
 };
 

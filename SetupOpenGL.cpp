@@ -7,7 +7,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "BufferController.h"
 #include "Shader.h"
+#include "BufferObject.h"
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
@@ -57,20 +59,20 @@ int main(int argc, char** argv)
 	//};
 
 	// square vertices
-	//float vertices[] = {
-	//// X, Y			// r, g, b			// Texture X, Y
-	//0.5f,  0.5f,    1.0f, 1.0f, 0.0f,    1.0f, 1.0f, // top right
- //   0.5f, -0.5f,    1.0f, 1.0f, 0.0f,    1.0f, 0.0f, // bottom right
- //  -0.5f, -0.5f,    0.0f, 0.0f, 1.0f,    0.0f, 0.0f, // bottom left
- //  -0.5f,  0.5f,    1.0f, 1.0f, 0.0f,    0.0f, 1.0f// top left
-	//};
+	float vertices[] = {
+	// X, Y			// r, g, b			//// Texture X, Y
+	0.5f,  0.5f,    1.0f, 1.0f, 0.0f,   // 1.0f, 1.0f, // top right
+    0.5f, -0.5f,    1.0f, 1.0f, 0.0f,   // 1.0f, 0.0f, // bottom right
+   -0.5f, -0.5f,    0.0f, 0.0f, 1.0f,   // 0.0f, 0.0f, // bottom left
+   -0.5f,  0.5f,    1.0f, 1.0f, 0.0f,   // 0.0f, 1.0f// top left
+	};
 
 	unsigned int indices[] = {  // note that we start from 0!
 		0, 1, 3,   // first triangle
 		1, 2, 3    // second triangle
 	};
 
-	float vertices[] = {
+	/*float vertices[] = {
 	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
 	 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
 	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
@@ -112,18 +114,25 @@ int main(int argc, char** argv)
 	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
 	-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
 	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
-	};
+	};*/
 
+	//BufferController bufferControl;
+	//std::cout << "array: " << indices << std::endl;
+	//GLuint ebo = bufferControl.generateBuffer(indices);
 
-	GLuint ebo; // Element buffer object
-	glGenBuffers(1, &ebo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	BufferObject vbo(vertices, sizeof(vertices), BufferObject::BufferType::Array);
+	BufferObject ebo(indices, sizeof(indices), BufferObject::BufferType::ElementArray);
 
-	GLuint vbo; // Vertex buffer object
-	glGenBuffers(1, &vbo); // Generate 1 buffer, store its id in vbo variable
-	glBindBuffer(GL_ARRAY_BUFFER, vbo); // bind vbo as a GL_ARRAY_BUFFER
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	//GLuint ebo; // Element buffer object
+	//glGenBuffers(1, &ebo);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	//std::cout << ebo;
+
+	//GLuint vbo; // Vertex buffer object
+	//glGenBuffers(1, &vbo); // Generate 1 buffer, store its id in vbo variable
+	//glBindBuffer(GL_ARRAY_BUFFER, vbo); // bind vbo as a GL_ARRAY_BUFFER
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 	GLuint vao; // vertex array object
 	glGenVertexArrays(1, &vao);
@@ -133,18 +142,21 @@ int main(int argc, char** argv)
 	glBindVertexArray(vao);
 
 	// 2. copy our vertices array in a buffer for OpenGL to use
-	//glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	Shader shader("vertex.vert", "fragment.frag");
+	vbo.Bind();
+	ebo.Bind();
+
+	Shader shader("sqrVer.vert", "sqFra.frag");
 
 #pragma region Vertex Attribs
 	// 3. then set our vertex attributes pointers
 
-	shader.enableVertexAttribArray("position", 3, 5, 0);
-
-	shader.enableVertexAttribArray("texCoord", 2, 5, 3);
+	shader.enableVertexAttribArray("position", 2, 5, 0);
+	
+	shader.enableVertexAttribArray("color", 3, 5, 2);
+	//shader.enableVertexAttribArray("texCoord", 2, 5, 3);
 #pragma endregion
 
+	/*
 #pragma region Texture
 
 	stbi_set_flip_vertically_on_load(true);
@@ -189,6 +201,7 @@ int main(int argc, char** argv)
 	stbi_image_free(data);
 
 #pragma endregion
+	*/
 
 	shader.use();
 
@@ -197,7 +210,9 @@ int main(int argc, char** argv)
 
 	//glUniform1i(tex1Location, 0);
 	//glUniform1i(tex2Location, 1);
-
+	/*
+	
+#pragma region camera bagulhos
 	glm::mat4 transMat(1.0f);
 	//transMat = glm::rotate(transMat, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
 	//transMat = glm::scale(transMat, glm::vec3(0.5, 0.5, 0.5));
@@ -241,7 +256,7 @@ int main(int argc, char** argv)
 	//glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));
 	shader.setMat4("projection", projection);
 
-	glClearColor(0.0f, 0.6f, 0.3f, 1.0f);
+	
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -258,8 +273,16 @@ int main(int argc, char** argv)
 	glm::vec3(-1.3f,  1.0f, -1.5f)
 	};
 
+
+#pragma endregion
+	*/
+
+
+	glClearColor(0.0f, 0.6f, 0.3f, 1.0f);
+
 	int start = SDL_GetTicks();
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glEnable(GL_DEPTH_TEST);
 
 	float deltaTime = 0.0f;	// Time between current frame and last frame
 	float lastFrameTime = SDL_GetTicks(); // Time of last frame
@@ -276,12 +299,12 @@ int main(int argc, char** argv)
 		while (SDL_PollEvent(&windowEvent) != 0) {
 			if (windowEvent.type == SDL_QUIT) break;
 
-			processMouseInput(windowEvent);
-			processKeyboard(deltaTime);
+			//processMouseInput(windowEvent);
+			//processKeyboard(deltaTime);
 		}
 		
-		SDL_ShowCursor(SDL_DISABLE);
-		SDL_CaptureMouse(SDL_TRUE);
+		//SDL_ShowCursor(SDL_DISABLE);
+		//SDL_CaptureMouse(SDL_TRUE);
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -289,25 +312,15 @@ int main(int argc, char** argv)
 		//glUniform3f(uniColor, (sin(time * 4.0f) + 1.0f) / 2.0f, 0.0f, 2.0f);
 		//view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 		//glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(view));
+
+/*
+#pragma region Camera bagulhos no loop
 		shader.setMat4("view", view);
 
 		projection = glm::perspective(glm::radians(fov), ratio, 0.1f, 100.0f);
 		//glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));
 		shader.setMat4("projection", projection);
 
-		glClear(GL_COLOR_BUFFER_BIT);
-		
-		//glUseProgram(shaderProgram);
-		
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, containerTex);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, faceTex);
-
-
-
-		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		//glDrawArrays(GL_TRIANGLES, 0, 36);
 		for (unsigned int i = 0; i < 10; i++)
 		{
 			glm::mat4 model(1.0f);
@@ -319,6 +332,27 @@ int main(int argc, char** argv)
 
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
+
+#pragma endregion
+		*/
+
+
+		//glClear(GL_COLOR_BUFFER_BIT);
+		
+		//glUseProgram(shaderProgram);
+		
+		/*
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, containerTex);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, faceTex);		
+		*/
+
+		shader.use();
+		glBindVertexArray(vao);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		//glDrawArrays(GL_TRIANGLES, 0, 36);
+		
 
 		SDL_GL_SwapWindow(window);
 	}
