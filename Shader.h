@@ -21,6 +21,7 @@ public:
 
 	void setMat4(const char* name, glm::mat4 mat) const;
 
+	void setTextureIndex(const char* name, int index) const;
 
 private:
 	void compileAndLinkShader(const char* vertexCode, const char* fragmentCode);

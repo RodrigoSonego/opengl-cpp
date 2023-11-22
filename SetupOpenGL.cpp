@@ -8,8 +8,9 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "BufferController.h"
-#include "Shader.h"
 #include "BufferObject.h"
+#include "Shader.h"
+#include "Texture.h"
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
@@ -25,7 +26,6 @@ float yaw = -90.0f;
 
 float fov = 45.0f;
 
-bool couldCompileShader(GLuint& shaderToVerify, char(&outInfoLog)[512]);
 SDL_Window* startOpenGLWindow();
 void processMouseInput(SDL_Event ev);
 static void processKeyboard(float deltaTime);
@@ -48,23 +48,15 @@ int main(int argc, char** argv)
 		SDL_Quit();
 		return -2;
 	}
-	// Vertices (Position (vec2), Color (vec3))
-	//float vertices[] = {
-	//	  -1.0f, -1.0f, 1.0f, 0.0f, 0.0f, // Vertex 1: Red
-	//	 -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // Vertex 2 (X, Y)
-	//	  0.0f,  -1.0f, 0.0f, 0.0f, 1.0f  // Vertex 3 (X, Y)
-	//	// 0.7f,  0.0f,  // Vertex 3 (X, Y)
-	//	//  0.0f, -0.3f // Vertex 1 (X, Y)
-	//	//-0.7f,  0.0f, // Vertex 2 (X, Y)
-	//};
+
 
 	// square vertices
 	float vertices[] = {
 	// X, Y			// r, g, b			//// Texture X, Y
-	0.5f,  0.5f,    1.0f, 1.0f, 0.0f,   // 1.0f, 1.0f, // top right
-    0.5f, -0.5f,    1.0f, 1.0f, 0.0f,   // 1.0f, 0.0f, // bottom right
-   -0.5f, -0.5f,    0.0f, 0.0f, 1.0f,   // 0.0f, 0.0f, // bottom left
-   -0.5f,  0.5f,    1.0f, 1.0f, 0.0f,   // 0.0f, 1.0f// top left
+	0.5f,  0.5f,    1.0f, 1.0f, 0.0f,   1.0f, 1.0f, // top right
+    0.5f, -0.5f,    1.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
+   -0.5f, -0.5f,    0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
+   -0.5f,  0.5f,    1.0f, 1.0f, 0.0f,   0.0f, 1.0f// top left
 	};
 
 	unsigned int indices[] = {  // note that we start from 0!
@@ -136,67 +128,27 @@ int main(int argc, char** argv)
 #pragma region Vertex Attribs
 	// 3. then set our vertex attributes pointers
 
-	shader.enableVertexAttribArray("position", 2, 5, 0);
+	shader.enableVertexAttribArray("position", 2, 7, 0);
 	
-	shader.enableVertexAttribArray("color", 3, 5, 2);
-	//shader.enableVertexAttribArray("texCoord", 2, 5, 3);
+	shader.enableVertexAttribArray("color", 3, 7, 5);
+	
+	shader.enableVertexAttribArray("texCoord", 2, 7, 5);
 #pragma endregion
 
-	/*
 #pragma region Texture
 
-	stbi_set_flip_vertically_on_load(true);
+	Texture containerTex("res/textures/container.jpg", GL_RGB);
 
-	GLuint containerTex;
-	glGenTextures(1, &containerTex);
-	glBindTexture(GL_TEXTURE_2D, containerTex);
-
-	// set the texture wrapping/filtering options (on the currently bound texture object)
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	int width, height, nChannels;
-	unsigned char* data = stbi_load("res/textures/container.jpg", &width, &height, &nChannels, 0);
-	if (data) {
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else {
-		std::cout << "Failed to load texture!";
-	}
-
-	stbi_image_free(data);
-
-
-	GLuint faceTex;
-	glGenTextures(1, &faceTex);
-	glBindTexture(GL_TEXTURE_2D, faceTex);
-
-	// set the texture wrapping/filtering options (on the currently bound texture object)
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	data = stbi_load("res/textures/awesomeface.png", &width, &height, &nChannels, 0);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-	glGenerateMipmap(GL_TEXTURE_2D);
-
-	stbi_image_free(data);
+	Texture faceTex("res/textures/awesomeface.png", GL_RGBA);
 
 #pragma endregion
-	*/
+	
 
 	shader.use();
 
-	//GLint tex1Location = glGetUniformLocation(shaderProgram, "outTexture");
-	//GLint tex2Location = glGetUniformLocation(shaderProgram, "outTexture2");
+	shader.setTextureIndex("outTexture", 0);
+	shader.setTextureIndex("outTexture2", 1);
 
-	//glUniform1i(tex1Location, 0);
-	//glUniform1i(tex2Location, 1);
-	/*
 	
 #pragma region camera bagulhos
 	glm::mat4 transMat(1.0f);
@@ -261,7 +213,7 @@ int main(int argc, char** argv)
 
 
 #pragma endregion
-	*/
+	
 
 
 	glClearColor(0.0f, 0.6f, 0.3f, 1.0f);
@@ -323,18 +275,14 @@ int main(int argc, char** argv)
 		*/
 
 
-		//glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT);
 		
-		//glUseProgram(shaderProgram);
-		
-		/*
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, containerTex);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, faceTex);		
-		*/
-
 		shader.use();
+		
+
+		containerTex.bindTexture(0);
+		faceTex.bindTexture(1);
+
 		glBindVertexArray(vao);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		//glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -347,18 +295,6 @@ int main(int argc, char** argv)
 	SDL_DestroyWindow(window);
 	SDL_Quit();
 	return 0;
-}
-
-bool couldCompileShader(GLuint &shaderToVerify, char(&outInfoLog)[512]) {
-	GLint success;
-	glGetShaderiv(shaderToVerify, GL_COMPILE_STATUS, &success); // checks for shader compile status
-
-	if (!success) {
-		glGetShaderInfoLog(shaderToVerify, 512, NULL, outInfoLog);
-		std::cout << "ERROR::SHADER::COMPILATION_FAILED\n" << outInfoLog << std::endl;
-	}
-
-	return success;
 }
 
 SDL_Window* startOpenGLWindow() {

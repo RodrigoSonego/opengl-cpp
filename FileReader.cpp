@@ -1,6 +1,8 @@
 #include "FileReader.h"
 #include <fstream>
 #include <sstream>
+#include "dependencies/stb_image/stb_image.h"
+#include <iostream>
 
 char* FileReader::readTextFile(const char* pathToFile)
 {
@@ -26,4 +28,16 @@ char* FileReader::readTextFile(const char* pathToFile)
 	}
 
     return _strdup(fileContent.c_str());
+}
+
+unsigned char* FileReader::readImageFile(const char* pathToFile, int* width, int* height, int* nChannels) const
+{
+	unsigned char* data = stbi_load(pathToFile, width, height, nChannels, 0);
+
+	if (!data) {
+		std::cout << "Failed to load texture at " << pathToFile;
+		return nullptr;
+	}
+
+	return data;
 }

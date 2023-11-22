@@ -35,6 +35,13 @@ void Shader::setMat4(const char* name, glm::mat4 mat) const
 	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(mat));
 }
 
+void Shader::setTextureIndex(const char* name, int index) const
+{
+	GLint location = glGetUniformLocation(id, name);
+
+	glUniform1i(location, index);
+}
+
 void Shader::compileAndLinkShader(const char* vertexCode, const char* fragmentCode)
 {
 	GLuint vertex, fragment;
