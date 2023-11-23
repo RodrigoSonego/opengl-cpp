@@ -17,6 +17,9 @@
 #define SCREEN_HEIGHT 600
 
 SDL_Window* startOpenGLWindow();
+void captureMouse();
+void stopCapturingMouse();
+void processEscapePress();
 
 int main(int argc, char** argv)
 {
@@ -159,7 +162,6 @@ int main(int argc, char** argv)
 
 
 #pragma endregion
-	
 
 
 	glClearColor(0.0f, 0.6f, 0.3f, 1.0f);
@@ -170,6 +172,8 @@ int main(int argc, char** argv)
 
 	float deltaTime = 0.0f;	// Time between current frame and last frame
 	float lastFrameTime = SDL_GetTicks(); // Time of last frame
+
+	captureMouse();
 
 	SDL_Event windowEvent;
 	while (true)
@@ -188,9 +192,7 @@ int main(int argc, char** argv)
 			camera.moveWithKeyboard(deltaTime);
 		}
 		
-		SDL_ShowCursor(SDL_DISABLE);
-		SDL_CaptureMouse(SDL_TRUE);
-		SDL_SetRelativeMouseMode(SDL_TRUE);
+		processEscapePress();
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -250,4 +252,25 @@ SDL_Window* startOpenGLWindow() {
 
 	SDL_Window* window = SDL_CreateWindow("OpenGL", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL);
 	return window;
+}
+
+void captureMouse()
+{
+	SDL_ShowCursor(SDL_DISABLE);
+	SDL_CaptureMouse(SDL_TRUE);
+	SDL_SetRelativeMouseMode(SDL_TRUE);
+}
+
+void stopCapturingMouse()
+{
+	SDL_ShowCursor(SDL_ENABLE);
+	SDL_CaptureMouse(SDL_FALSE);
+	SDL_SetRelativeMouseMode(SDL_FALSE);
+}
+
+void processEscapePress()
+{
+	const Uint8* keyState = SDL_GetKeyboardState(NULL);
+	
+	if (keyState[SDL_SCANCODE_ESCAPE]) { stopCapturingMouse(); }
 }
