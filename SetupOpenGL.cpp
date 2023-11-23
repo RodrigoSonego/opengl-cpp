@@ -195,7 +195,7 @@ int main(int argc, char** argv)
 		while (SDL_PollEvent(&windowEvent) != 0) {
 			if (windowEvent.type == SDL_QUIT) break;
 
-			//camera.processMouseInput(windowEvent);
+			camera.processMouseInput(windowEvent);
 			camera.moveWithKeyboard(deltaTime);
 		}
 		
@@ -239,7 +239,6 @@ int main(int argc, char** argv)
 			model = glm::translate(model, cubePositions[i]);
 			float angle = 20.0f * i;
 			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-			//glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
 			shader.setMat4("model", model);
 
 			glDrawArrays(GL_TRIANGLES, 0, 36);
