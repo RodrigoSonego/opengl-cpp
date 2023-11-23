@@ -50,21 +50,12 @@ int main(int argc, char** argv)
 	}
 
 
-	// square vertices
-	float vertices[] = {
-	// X, Y			// r, g, b			//// Texture X, Y
-	0.5f,  0.5f,    1.0f, 1.0f, 0.0f,   1.0f, 1.0f, // top right
-    0.5f, -0.5f,    1.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-   -0.5f, -0.5f,    0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-   -0.5f,  0.5f,    1.0f, 1.0f, 0.0f,   0.0f, 1.0f// top left
-	};
-
 	unsigned int indices[] = {  // note that we start from 0!
 		0, 1, 3,   // first triangle
 		1, 2, 3    // second triangle
 	};
 
-	/*float vertices[] = {
+	float vertices[] = {
 	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
 	 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
 	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
@@ -106,7 +97,7 @@ int main(int argc, char** argv)
 	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
 	-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
 	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
-	};*/
+	};
 
 	BufferObject vbo(vertices, sizeof(vertices), BufferObject::BufferType::Array);
 	BufferObject ebo(indices, sizeof(indices), BufferObject::BufferType::ElementArray);
@@ -123,16 +114,14 @@ int main(int argc, char** argv)
 	vbo.Bind();
 	ebo.Bind();
 
-	Shader shader("sqrVer.vert", "sqFra.frag");
+	Shader shader("vertex.vert", "fragment.frag");
 
 #pragma region Vertex Attribs
 	// 3. then set our vertex attributes pointers
 
-	shader.enableVertexAttribArray("position", 2, 7, 0);
+	shader.enableVertexAttribArray("position", 3, 5, 0);
 	
-	shader.enableVertexAttribArray("color", 3, 7, 5);
-	
-	shader.enableVertexAttribArray("texCoord", 2, 7, 5);
+	shader.enableVertexAttribArray("texCoord", 2, 5, 3);
 #pragma endregion
 
 #pragma region Texture
@@ -151,13 +140,10 @@ int main(int argc, char** argv)
 
 	
 #pragma region camera bagulhos
+	
 	glm::mat4 transMat(1.0f);
-	//transMat = glm::rotate(transMat, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
-	//transMat = glm::scale(transMat, glm::vec3(0.5, 0.5, 0.5));
 
 	shader.setMat4("transform", transMat);
-	//GLuint transformLoc = glGetUniformLocation(shaderProgram, "transform");
-	//glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transMat));
 
 	// // // // CAMERA STUFF // // // //
 	glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 5.0f);
@@ -174,7 +160,6 @@ int main(int argc, char** argv)
 	glm::mat4 model(1.0f);
 	model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0, 0.0, 0.0));
 
-	//glm::mat4 view = glm::mat4(1.0f);
 	// note that we're translating the scene in the reverse direction of where we want to move
 	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
 
@@ -182,19 +167,12 @@ int main(int argc, char** argv)
 	float ratio = SCREEN_WIDTH / SCREEN_HEIGHT;
 	projection = glm::perspective(glm::radians(fov), ratio, 0.1f, 100.0f);
 
-	//GLuint modelLocation = glGetUniformLocation(shaderProgram, "model");
-	//glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
 	shader.setMat4("model", model);
 
-	//GLuint viewLocation = glGetUniformLocation(shaderProgram, "view");
-	//glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(view));
 	shader.setMat4("view", view);
 
-	//GLuint projectionLocation = glGetUniformLocation(shaderProgram, "projection");
-	//glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));
 	shader.setMat4("projection", projection);
 
-	
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -247,18 +225,32 @@ int main(int argc, char** argv)
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-		//glUniform3f(uniColor, (sin(time * 4.0f) + 1.0f) / 2.0f, 0.0f, 2.0f);
-		//view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-		//glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(view));
+		view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
-/*
-#pragma region Camera bagulhos no loop
 		shader.setMat4("view", view);
 
+
+#pragma region Camera bagulhos no loop
+
 		projection = glm::perspective(glm::radians(fov), ratio, 0.1f, 100.0f);
-		//glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));
+		
 		shader.setMat4("projection", projection);
 
+#pragma endregion
+
+
+		glClear(GL_COLOR_BUFFER_BIT);
+		
+		shader.use();
+		
+
+		containerTex.bindTexture(0);
+		faceTex.bindTexture(1);
+
+		glBindVertexArray(vao);
+		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		//glDrawArrays(GL_TRIANGLES, 0, 36);
+		
 		for (unsigned int i = 0; i < 10; i++)
 		{
 			glm::mat4 model(1.0f);
@@ -271,22 +263,6 @@ int main(int argc, char** argv)
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
 
-#pragma endregion
-		*/
-
-
-		glClear(GL_COLOR_BUFFER_BIT);
-		
-		shader.use();
-		
-
-		containerTex.bindTexture(0);
-		faceTex.bindTexture(1);
-
-		glBindVertexArray(vao);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		//glDrawArrays(GL_TRIANGLES, 0, 36);
-		
 
 		SDL_GL_SwapWindow(window);
 	}
