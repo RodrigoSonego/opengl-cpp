@@ -138,20 +138,8 @@ int main(int argc, char** argv)
 	Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
 
-	//view = glm::lookAt(cameraPos, cameraTarget, worldUp);
-
-
-	//glm::mat4 model(1.0f);
-	//model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0, 0.0, 0.0));
-
-	// note that we're translating the scene in the reverse direction of where we want to move
-
 	glm::mat4 projection;
 	float ratio = SCREEN_WIDTH / SCREEN_HEIGHT;
-
-	//shader.setMat4("model", model);
-
-	//shader.setMat4("projection", projection);
 
 
 	glEnable(GL_DEPTH_TEST);
@@ -196,6 +184,7 @@ int main(int argc, char** argv)
 			if (windowEvent.type == SDL_QUIT) break;
 
 			camera.processMouseInput(windowEvent);
+			//processMouseInput(windowEvent);
 			camera.moveWithKeyboard(deltaTime);
 		}
 		
@@ -205,11 +194,9 @@ int main(int argc, char** argv)
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glm::mat4 view;
-		view = camera.getView();
+		glm::mat4 view = camera.getView();
 		shader.setMat4("view", view);
 
-		//view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
 
 
 #pragma region Camera bagulhos no loop

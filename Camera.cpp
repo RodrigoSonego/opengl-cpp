@@ -26,6 +26,7 @@ void Camera::processMouseInput(SDL_Event ev)
 		float xPos = ev.button.x;
 		float yPos = ev.button.y;
 
+
 		float xOffset = xPos - lastMouseX;
 		float yOffset = lastMouseY - yPos;
 
@@ -52,11 +53,7 @@ void Camera::processMouseInput(SDL_Event ev)
 			lastMouseY = yPos;
 		}
 
-		glm::vec3 front;
-		front.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
-		front.y = sin(glm::radians(pitch));
-		front.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));
-		cameraFront = glm::normalize(front);
+		updateCameraFront();
 	}
 
 	if (ev.type == SDL_MOUSEWHEEL)
@@ -68,6 +65,14 @@ void Camera::processMouseInput(SDL_Event ev)
 		if (fov >= 45.0f)
 			fov = 45.0f;
 	}
+}
+
+void Camera::updateCameraFront() {
+	glm::vec3 front;
+	front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+	front.y = sin(glm::radians(pitch));
+	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+	cameraFront = glm::normalize(front);
 }
 
 void Camera::moveWithKeyboard(float deltaTime, float speedModifier)

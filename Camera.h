@@ -24,10 +24,12 @@ private:
 
 	float fov = 45.0f;
 	
-	float pitch;
+	float pitch = 0.0f;
 	float yaw = -90.0f;
 
 	float lastMouseX = 400;
 	float lastMouseY = 300;
+
+	void updateCameraFront();
 };
 
