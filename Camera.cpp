@@ -20,6 +20,7 @@ glm::mat4 Camera::getPerspective(float ratio)
 	return glm::perspective(glm::radians(fov), ratio, nearPlane, farPlane);
 }
 
+// TODO: make this be able to rotate 360º horizontally
 void Camera::processMouseInput(SDL_Event ev)
 {
 	if (ev.type == SDL_MOUSEMOTION) {

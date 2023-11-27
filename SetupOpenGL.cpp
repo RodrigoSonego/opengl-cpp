@@ -189,9 +189,9 @@ int main(int argc, char** argv)
 
 			camera.processMouseInput(windowEvent);
 			//processMouseInput(windowEvent);
-			camera.moveWithKeyboard(deltaTime);
 		}
 		
+		camera.moveWithKeyboard(deltaTime);
 		processEscapePress();
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
