@@ -13,6 +13,9 @@
 #include "Shader.h"
 #include "Texture.h"
 
+#include <vector>
+#include "FileReader.h"
+
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 
@@ -46,53 +49,70 @@ int main(int argc, char** argv)
 		1, 2, 3    // second triangle
 	};
 
-	float vertices[] = {
-	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-	 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+	//float vertices[] = {
+	//-0.5f, -0.5f, -0.5f,  //0.0f, 0.0f,
+	// 0.5f, -0.5f, -0.5f,  //1.0f, 0.0f,
+	// 0.5f,  0.5f, -0.5f,  //1.0f, 1.0f,
+	// 0.5f,  0.5f, -0.5f,  //1.0f, 1.0f,
+	//-0.5f,  0.5f, -0.5f,  //0.0f, 1.0f,
+	//-0.5f, -0.5f, -0.5f,  //0.0f, 0.0f,
+	//					  //
+	//-0.5f, -0.5f,  0.5f,  //0.0f, 0.0f,
+	// 0.5f, -0.5f,  0.5f,  //1.0f, 0.0f,
+	// 0.5f,  0.5f,  0.5f,  //1.0f, 1.0f,
+	// 0.5f,  0.5f,  0.5f,  //1.0f, 1.0f,
+	//-0.5f,  0.5f,  0.5f,  //0.0f, 1.0f,
+	//-0.5f, -0.5f,  0.5f,  //0.0f, 0.0f,
+	//					  //
+	//-0.5f,  0.5f,  0.5f,  //1.0f, 0.0f,
+	//-0.5f,  0.5f, -0.5f,  //1.0f, 1.0f,
+	//-0.5f, -0.5f, -0.5f,  //0.0f, 1.0f,
+	//-0.5f, -0.5f, -0.5f,  //0.0f, 1.0f,
+	//-0.5f, -0.5f,  0.5f,  //0.0f, 0.0f,
+	//-0.5f,  0.5f,  0.5f,  //1.0f, 0.0f,
+	//					  //
+	// 0.5f,  0.5f,  0.5f,  //1.0f, 0.0f,
+	// 0.5f,  0.5f, -0.5f,  //1.0f, 1.0f,
+	// 0.5f, -0.5f, -0.5f,  //0.0f, 1.0f,
+	// 0.5f, -0.5f, -0.5f,  //0.0f, 1.0f,
+	// 0.5f, -0.5f,  0.5f,  //0.0f, 0.0f,
+	// 0.5f,  0.5f,  0.5f,  //1.0f, 0.0f,
+	//					  //
+	//-0.5f, -0.5f, -0.5f,  //0.0f, 1.0f,
+	// 0.5f, -0.5f, -0.5f,  //1.0f, 1.0f,
+	// 0.5f, -0.5f,  0.5f,  //1.0f, 0.0f,
+	// 0.5f, -0.5f,  0.5f,  //1.0f, 0.0f,
+	//-0.5f, -0.5f,  0.5f,  //0.0f, 0.0f,
+	//-0.5f, -0.5f, -0.5f,  //0.0f, 1.0f,
+	//					  //
+	//-0.5f,  0.5f, -0.5f,  //0.0f, 1.0f,
+	// 0.5f,  0.5f, -0.5f,  //1.0f, 1.0f,
+	// 0.5f,  0.5f,  0.5f,  //1.0f, 0.0f,
+	// 0.5f,  0.5f,  0.5f,  //1.0f, 0.0f,
+	//-0.5f,  0.5f,  0.5f,  //0.0f, 0.0f,
+	//-0.5f,  0.5f, -0.5f,  //0.0f, 1.0f
+	//};
 
-	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-	 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-	 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-	-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	std::vector<glm::vec3> vertices;
+	std::vector<glm::vec3> normals;
+	std::vector<GLushort>  elements;
 
-	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	FileReader reader;
+	reader.load_obj("obj/necoarc.obj", vertices, normals, elements);
 
-	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	 0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	BufferObject vbo(vertices.data(), vertices.size() * sizeof(vertices[0]), BufferObject::BufferType::Array);
+	BufferObject ebo(elements.data(), elements.size() * sizeof(elements[0]), BufferObject::BufferType::ElementArray);
 
-	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	 0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	/*
+	std::cout << "VERTICES ---------------------" << std::endl;
+	for (glm::vec3 vertex : vertices) {
+		std::cout << "x: " << vertex.x << " y: " << vertex.y << " z: " << vertex.z << std::endl;
+	}
 
-	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
-	};
-
-	BufferObject vbo(vertices, sizeof(vertices), BufferObject::BufferType::Array);
-	BufferObject ebo(indices, sizeof(indices), BufferObject::BufferType::ElementArray);
-
+	std::cout << std::endl << "INDICES ------------------" << std::endl;
+	for (GLushort index : elements) {
+		std::cout << index << std::endl;
+	}*/
 
 	GLuint vao; // vertex array object
 	glGenVertexArrays(1, &vao);
@@ -110,9 +130,9 @@ int main(int argc, char** argv)
 #pragma region Vertex Attribs
 	// 3. then set our vertex attributes pointers
 
-	shader.enableVertexAttribArray("position", 3, 5, 0);
+	shader.enableVertexAttribArray("position", 3, 0, 0);
 	
-	shader.enableVertexAttribArray("texCoord", 2, 5, 3);
+	//shader.enableVertexAttribArray("texCoord", 2, 5, 3);
 #pragma endregion
 
 #pragma region Texture
@@ -221,8 +241,8 @@ int main(int argc, char** argv)
 		glBindVertexArray(vao);
 		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		//glDrawArrays(GL_TRIANGLES, 0, 36);
-		
-		for (unsigned int i = 0; i < 10; i++)
+
+	/*	for (unsigned int i = 0; i < 10; i++)
 		{
 			glm::mat4 model(1.0f);
 			model = glm::translate(model, cubePositions[i]);
@@ -231,10 +251,24 @@ int main(int argc, char** argv)
 			shader.setMat4("model", model);
 
 			glDrawArrays(GL_TRIANGLES, 0, 36);
-		}
+		}*/
 
+		glm::mat4 model(1.0f);
+		model = glm::translate(model, cubePositions[0]);
+		float angle = 45.0f;
+		model = glm::rotate(model, glm::radians(angle), glm::vec3(0.0f, -1.0f, 0.0f));
+
+		shader.setMat4("model", model);
+
+		ebo.Bind();
+
+		int size;  glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
+		glDrawElements(GL_TRIANGLES, size / sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
+
+		//std::cout << "size of elment array buffer: " << size << " DVIDIDED: " << (size / sizeof(GLushort)) << std::endl;
 
 		SDL_GL_SwapWindow(window);
+
 	}
 
 	SDL_GL_DeleteContext(context);
