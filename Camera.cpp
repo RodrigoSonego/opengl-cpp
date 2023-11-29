@@ -28,8 +28,8 @@ void Camera::processMouseInput(SDL_Event ev)
 		float yPos = ev.button.y;
 
 
-		float xOffset = xPos - lastMouseX;
-		float yOffset = lastMouseY - yPos;
+		float xOffset = ev.motion.xrel;
+		float yOffset = -ev.motion.yrel;
 
 		lastMouseX = xPos;
 		lastMouseY = yPos;
@@ -89,6 +89,12 @@ void Camera::moveWithKeyboard(float deltaTime, float speedModifier)
 		cameraPosition -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 	if (keyState[SDL_SCANCODE_D])
 		cameraPosition += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+	if (keyState[SDL_SCANCODE_Q])
+		cameraPosition += glm::vec3(0, 1, 0) * cameraSpeed;
+	if (keyState[SDL_SCANCODE_E])
+		cameraPosition -= glm::vec3(0, 0.7, 0) * cameraSpeed;
+
+	std::cout << "x: " << cameraPosition.x << " y: " << cameraPosition.y << " z: " << cameraPosition.z << std::endl;
 }
 
 
