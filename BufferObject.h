@@ -2,7 +2,9 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <vector>
-
+/// <summary>
+/// Class to represent a buffer object, either an Array Buffer or Element Array buffer
+/// </summary>
 class BufferObject {
 public:
     /// <summary>

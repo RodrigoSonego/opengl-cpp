@@ -5,7 +5,11 @@ class Shader
 {
 public:
 	unsigned int id;
-
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="vertexPath">path to the vertex shader</param>
+	/// <param name="fragmentPath">path to the fragment shader</param>
 	Shader(const char* vertexPath, const char* fragmentPath);
 
 	void use();
@@ -19,8 +23,18 @@ public:
 /// <param name="offset">Offset where data begins in buffer</param>
 	void enableVertexAttribArray(const char* name, int size, int stride, int offset);
 
+	/// <summary>
+	/// Set a mat4 value on the shader
+	/// </summary>
+	/// <param name="name">property name</param>
+	/// <param name="mat">matrix value to be set</param>
 	void setMat4(const char* name, glm::mat4 mat) const;
 
+	/// <summary>
+	/// Attributes a texture uniform to a texture index
+	/// </summary>
+	/// <param name="name">name of the texture</param>
+	/// <param name="index">index to be attributed</param>
 	void setTextureIndex(const char* name, int index) const;
 
 private:

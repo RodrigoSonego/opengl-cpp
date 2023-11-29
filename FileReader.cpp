@@ -56,6 +56,7 @@ void FileReader::load_obj(const char* filename, std::vector<Vertex>& outVertices
 		exit(1);
 	}
 
+	// Temporary arrays to store positions and texCoords as read.
 	std::vector<glm::vec3> tempPositions;
 	std::vector<glm::vec2> tempCoords;
 
@@ -85,26 +86,32 @@ void FileReader::load_obj(const char* filename, std::vector<Vertex>& outVertices
 		else if (line.substr(0, 2) == "f ")
 		{
 			std::istringstream stream(line.substr(2));
-			GLushort posIndex, b, c, ign;
-			GLushort texIndex, uvB, uvC;
-			
-			std::cout << stream.str() << std::endl;
+			GLushort posIndex, ign;
+			GLushort texIndex;
 
+			// Line is 00/00/00 00/00/00 00/00/00
+			// Each iteration goes through one of the three sets
 			for (short i = 0; i < 3; i++)
 			{
+				// grab the first element and put it in posIndex
 				stream >> posIndex;
+				//ignore second element ( / )
 				stream.ignore();
+				// grab the third element and put it in texIndex
 				stream >> texIndex;
+				//ignore fourth element ( / )
 				stream.ignore();
+				// throw the rest into a dummy variable and continue reading the line
 				stream >> ign;
 
 				--posIndex;
 				--texIndex;
 
-				//uvIndices.push_back(texIndex);
+				//////// Debug logs
 				//std::cout << "tempVer size: " << tempPositions.size() << " tempCoord: " << tempCoords.size() << " vertices: " << vertices.size() << std::endl;
 				//std::cout << "posIndex: " << posIndex << " texIndex: " << texIndex << std::endl;
 				
+				// If an object doesn't have texture coordinates it is considered in a bad format
 				if (tempCoords.size() == 0) {
 					std::cout << "ERROR::OBJ::BAD:FORMAT::ABORTING";
 					return;
@@ -114,11 +121,12 @@ void FileReader::load_obj(const char* filename, std::vector<Vertex>& outVertices
 				tempVert.position = tempPositions[posIndex];
 				tempVert.texCoord = tempCoords[texIndex];
 
+				// Remap indexes to account for more than one UV coordinate
+				// using the same position, essentialy duplicating some vertices
 				GLushort newIndex = outVertices.size();
-
 				outVertices.push_back(tempVert);
-
 				outIndices.push_back(newIndex);
+
 			}
 		}
 		/* anything else is ignored */

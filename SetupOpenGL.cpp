@@ -7,7 +7,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "BufferController.h"
 #include "BufferObject.h"
 #include "Camera.h"
 #include "Shader.h"
@@ -19,6 +18,10 @@
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 
+/// <summary>
+/// Does SDL startup
+/// </summary>
+/// <returns></returns>
 SDL_Window* startOpenGLWindow();
 void captureMouse();
 void stopCapturingMouse();
@@ -26,6 +29,9 @@ void processEscapePress();
 
 int main(int argc, char** argv)
 {
+
+#pragma region Start Window
+
 	SDL_Window* window = startOpenGLWindow();
 	if (window == nullptr)
 	{
@@ -43,84 +49,61 @@ int main(int argc, char** argv)
 		return -2;
 	}
 
+#pragma endregion
 
 
-	std::vector<glm::vec3> vertices;
+	std::vector<Vertex> vertices;
 	std::vector<GLushort>  indices;
 
-	std::vector<Vertex> coolerVertices;
 
 	FileReader reader;
-	reader.load_obj("res/models/shiba.obj", coolerVertices, indices);
+	reader.load_obj("res/models/rayman.obj", vertices, indices);
 
-	BufferObject vboVert(coolerVertices.data(), coolerVertices.size() * sizeof(coolerVertices[0]), BufferObject::BufferType::Array);
-	BufferObject eboVert(indices.data(), indices.size() * sizeof(indices[0]), BufferObject::BufferType::ElementArray);
+	BufferObject vbo(vertices.data(), vertices.size() * sizeof(vertices[0]), BufferObject::BufferType::Array);
+	BufferObject ebo(indices.data(), indices.size() * sizeof(indices[0]), BufferObject::BufferType::ElementArray);
 	
 
-	GLuint vaoVert;//, vaoCoord; // vertex array object
-	glGenVertexArrays(1, &vaoVert);
+	GLuint vao; // Vertex Array Object
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
 
-	// ..:: Initialization code (done once (unless your object frequently changes)) :: ..
-	// 1. bind Vertex Array Object
-	glBindVertexArray(vaoVert);
-	// 2. copy our vertices array in a buffer for OpenGL to use
-	vboVert.Bind();
-	eboVert.Bind();
+	// Binding buffers to the VAO
+	vbo.Bind();
+	ebo.Bind();
 
 	Shader shader("vertex.vert", "fragment.frag");
 
 #pragma region Vertex Attribs
-	// 3. then set our vertex attributes pointers
-
-	vboVert.Bind();
-	shader.enableVertexAttribArray("position", 3, 5, 0);
 	
-	//vboCoord.Bind();
+	shader.enableVertexAttribArray("position", 3, 5, 0);
 	shader.enableVertexAttribArray("texCoord", 2, 5, 3);
+
 #pragma endregion
 
 #pragma region Texture
-
-	Texture containerTex("res/textures/shiba.png", GL_RGB);
-
-	//Texture faceTex("res/textures/awesomeface.png", GL_RGBA);
-
-#pragma endregion
-	
+	// Create and bind texture afterwards
+	Texture mainTexture("res/textures/rayman.png", GL_RGB);
 
 	shader.use();
 
 	shader.setTextureIndex("outTexture", 0);
-	//shader.setTextureIndex("outTexture2", 1);
+	mainTexture.bindTexture(0);
 
+#pragma endregion
 	
-#pragma region camera bagulhos
-	
+
+
 	glm::mat4 transMat(1.0f);
 
 	shader.setMat4("transform", transMat);
 
+#pragma region Camera
 	// // // // CAMERA STUFF // // // //
 	
 	Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
-
 	glm::mat4 projection;
 	float ratio = SCREEN_WIDTH / SCREEN_HEIGHT;
-
-
-	glm::vec3 cubePositions[] = {
-	glm::vec3(0.0f,  0.0f,  0.0f),
-	glm::vec3(2.0f,  5.0f, -15.0f),
-	glm::vec3(-1.5f, -2.2f, -2.5f),
-	glm::vec3(-3.8f, -2.0f, -12.3f),
-	glm::vec3(2.4f, -0.4f, -3.5f),
-	glm::vec3(-1.7f,  3.0f, -7.5f),
-	glm::vec3(1.3f, -2.0f, -2.5f),
-	glm::vec3(1.5f,  2.0f, -2.5f),
-	glm::vec3(1.5f,  0.2f, -1.5f),
-	glm::vec3(-1.3f,  1.0f, -1.5f)
-	};
 
 
 #pragma endregion
@@ -150,7 +133,6 @@ int main(int argc, char** argv)
 			if (windowEvent.type == SDL_QUIT) break;
 
 			camera.processMouseInput(windowEvent);
-			//processMouseInput(windowEvent);
 		}
 		
 		camera.moveWithKeyboard(deltaTime);
@@ -158,38 +140,37 @@ int main(int argc, char** argv)
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+#pragma region Camera setup on loop
 		glm::mat4 view = camera.getView();
 		shader.setMat4("view", view);
-
-
-
-#pragma region Camera bagulhos no loop
 
 		projection = camera.getPerspective(ratio);
 		
 		shader.setMat4("projection", projection);
+#pragma endregion
+
+		
+
+
+#pragma region Position and Rotate object
+
+		glm::mat4 model(1.0f);
+		model = glm::translate(model, glm::vec3(0,0,0));
+		float angle = 45.0f;
+		model = glm::rotate(model, glm::radians(angle), glm::vec3(0.0f, -1.0f, 0.0f));
+		shader.setMat4("model", model);
+
+		transMat = glm::rotate(transMat, deltaTime, glm::vec3(0.0f, 0.3f, 0.0f));
+		shader.setMat4("transform", transMat);
 
 #pragma endregion
 
 
-		glClear(GL_COLOR_BUFFER_BIT);
-		
-		shader.use();
-		
-		containerTex.bindTexture(0);
-
-		glm::mat4 model(1.0f);
-		model = glm::translate(model, cubePositions[0]);
-		float angle = 45.0f * deltaTime;
-		model = glm::rotate(model, glm::radians(angle), glm::vec3(0.0f, -1.0f, 0.0f));
-
-		shader.setMat4("model", model);
-
-		glBindVertexArray(vaoVert);
-		vboVert.Bind();
-		eboVert.Bind();
-		int size;  glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
-		glDrawElements(GL_TRIANGLES, size / sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
+		int bufferSize;
+		glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &bufferSize);
+	
+		// Get number of elements to draw based on buffer size
+		glDrawElements(GL_TRIANGLES, bufferSize / sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
 
 		SDL_GL_SwapWindow(window);
 

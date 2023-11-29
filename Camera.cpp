@@ -7,12 +7,12 @@
 
 Camera::Camera(glm::vec3 initialPos)
 {
-	cameraPos = initialPos;
+	cameraPosition = initialPos;
 }
 
 glm::mat4 Camera::getView()
 {
-	return glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);;
+	return glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);;
 }
 
 glm::mat4 Camera::getPerspective(float ratio)
@@ -82,13 +82,13 @@ void Camera::moveWithKeyboard(float deltaTime, float speedModifier)
 	const Uint8* keyState;
 	keyState = SDL_GetKeyboardState(NULL);
 	if (keyState[SDL_SCANCODE_W])
-		cameraPos += cameraSpeed * cameraFront;
+		cameraPosition += cameraSpeed * cameraFront;
 	if (keyState[SDL_SCANCODE_S])
-		cameraPos -= cameraSpeed * cameraFront;
+		cameraPosition -= cameraSpeed * cameraFront;
 	if (keyState[SDL_SCANCODE_A])
-		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		cameraPosition -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 	if (keyState[SDL_SCANCODE_D])
-		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		cameraPosition += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 }
 
 

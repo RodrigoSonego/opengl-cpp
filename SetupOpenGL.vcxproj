@@ -130,7 +130,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BufferController.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="dependencies\glad\src\glad.c" />
     <ClCompile Include="dependencies\stb_image\stb_image.cpp" />
@@ -141,7 +140,6 @@
     <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BufferController.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="dependencies\stb_image\stb_image.h" />
     <ClInclude Include="FileReader.h" />
