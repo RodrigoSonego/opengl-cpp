@@ -94,6 +94,8 @@ void Camera::moveWithKeyboard(float deltaTime, float speedModifier)
 	if (keyState[SDL_SCANCODE_E])
 		cameraPosition -= glm::vec3(0, 0.7, 0) * cameraSpeed;
 
+	cameraPosition = glm::clamp(cameraPosition, cameraMinPos, cameraMaxPos);
+
 	std::cout << "x: " << cameraPosition.x << " y: " << cameraPosition.y << " z: " << cameraPosition.z << std::endl;
 }
 
