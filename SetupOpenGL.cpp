@@ -44,102 +44,46 @@ int main(int argc, char** argv)
 	}
 
 
-	unsigned int indices[] = {  // note that we start from 0!
-		0, 1, 3,   // first triangle
-		1, 2, 3    // second triangle
-	};
-
-	//float vertices[] = {
-	//-0.5f, -0.5f, -0.5f,  //0.0f, 0.0f,
-	// 0.5f, -0.5f, -0.5f,  //1.0f, 0.0f,
-	// 0.5f,  0.5f, -0.5f,  //1.0f, 1.0f,
-	// 0.5f,  0.5f, -0.5f,  //1.0f, 1.0f,
-	//-0.5f,  0.5f, -0.5f,  //0.0f, 1.0f,
-	//-0.5f, -0.5f, -0.5f,  //0.0f, 0.0f,
-	//					  //
-	//-0.5f, -0.5f,  0.5f,  //0.0f, 0.0f,
-	// 0.5f, -0.5f,  0.5f,  //1.0f, 0.0f,
-	// 0.5f,  0.5f,  0.5f,  //1.0f, 1.0f,
-	// 0.5f,  0.5f,  0.5f,  //1.0f, 1.0f,
-	//-0.5f,  0.5f,  0.5f,  //0.0f, 1.0f,
-	//-0.5f, -0.5f,  0.5f,  //0.0f, 0.0f,
-	//					  //
-	//-0.5f,  0.5f,  0.5f,  //1.0f, 0.0f,
-	//-0.5f,  0.5f, -0.5f,  //1.0f, 1.0f,
-	//-0.5f, -0.5f, -0.5f,  //0.0f, 1.0f,
-	//-0.5f, -0.5f, -0.5f,  //0.0f, 1.0f,
-	//-0.5f, -0.5f,  0.5f,  //0.0f, 0.0f,
-	//-0.5f,  0.5f,  0.5f,  //1.0f, 0.0f,
-	//					  //
-	// 0.5f,  0.5f,  0.5f,  //1.0f, 0.0f,
-	// 0.5f,  0.5f, -0.5f,  //1.0f, 1.0f,
-	// 0.5f, -0.5f, -0.5f,  //0.0f, 1.0f,
-	// 0.5f, -0.5f, -0.5f,  //0.0f, 1.0f,
-	// 0.5f, -0.5f,  0.5f,  //0.0f, 0.0f,
-	// 0.5f,  0.5f,  0.5f,  //1.0f, 0.0f,
-	//					  //
-	//-0.5f, -0.5f, -0.5f,  //0.0f, 1.0f,
-	// 0.5f, -0.5f, -0.5f,  //1.0f, 1.0f,
-	// 0.5f, -0.5f,  0.5f,  //1.0f, 0.0f,
-	// 0.5f, -0.5f,  0.5f,  //1.0f, 0.0f,
-	//-0.5f, -0.5f,  0.5f,  //0.0f, 0.0f,
-	//-0.5f, -0.5f, -0.5f,  //0.0f, 1.0f,
-	//					  //
-	//-0.5f,  0.5f, -0.5f,  //0.0f, 1.0f,
-	// 0.5f,  0.5f, -0.5f,  //1.0f, 1.0f,
-	// 0.5f,  0.5f,  0.5f,  //1.0f, 0.0f,
-	// 0.5f,  0.5f,  0.5f,  //1.0f, 0.0f,
-	//-0.5f,  0.5f,  0.5f,  //0.0f, 0.0f,
-	//-0.5f,  0.5f, -0.5f,  //0.0f, 1.0f
-	//};
 
 	std::vector<glm::vec3> vertices;
-	std::vector<glm::vec3> normals;
-	std::vector<GLushort>  elements;
+	std::vector<GLushort>  indices;
+
+	std::vector<Vertex> coolerVertices;
 
 	FileReader reader;
-	reader.load_obj("obj/necoarc.obj", vertices, normals, elements);
+	reader.load_obj("res/models/shiba.obj", coolerVertices, indices);
 
-	BufferObject vbo(vertices.data(), vertices.size() * sizeof(vertices[0]), BufferObject::BufferType::Array);
-	BufferObject ebo(elements.data(), elements.size() * sizeof(elements[0]), BufferObject::BufferType::ElementArray);
+	BufferObject vboVert(coolerVertices.data(), coolerVertices.size() * sizeof(coolerVertices[0]), BufferObject::BufferType::Array);
+	BufferObject eboVert(indices.data(), indices.size() * sizeof(indices[0]), BufferObject::BufferType::ElementArray);
+	
 
-	/*
-	std::cout << "VERTICES ---------------------" << std::endl;
-	for (glm::vec3 vertex : vertices) {
-		std::cout << "x: " << vertex.x << " y: " << vertex.y << " z: " << vertex.z << std::endl;
-	}
-
-	std::cout << std::endl << "INDICES ------------------" << std::endl;
-	for (GLushort index : elements) {
-		std::cout << index << std::endl;
-	}*/
-
-	GLuint vao; // vertex array object
-	glGenVertexArrays(1, &vao);
+	GLuint vaoVert;//, vaoCoord; // vertex array object
+	glGenVertexArrays(1, &vaoVert);
 
 	// ..:: Initialization code (done once (unless your object frequently changes)) :: ..
 	// 1. bind Vertex Array Object
-	glBindVertexArray(vao);
-
+	glBindVertexArray(vaoVert);
 	// 2. copy our vertices array in a buffer for OpenGL to use
-	vbo.Bind();
-	ebo.Bind();
+	vboVert.Bind();
+	eboVert.Bind();
 
 	Shader shader("vertex.vert", "fragment.frag");
 
 #pragma region Vertex Attribs
 	// 3. then set our vertex attributes pointers
 
-	shader.enableVertexAttribArray("position", 3, 0, 0);
+	vboVert.Bind();
+	shader.enableVertexAttribArray("position", 3, 5, 0);
 	
-	//shader.enableVertexAttribArray("texCoord", 2, 5, 3);
+	//vboCoord.Bind();
+	shader.enableVertexAttribArray("texCoord", 2, 5, 3);
 #pragma endregion
 
 #pragma region Texture
 
-	Texture containerTex("res/textures/container.jpg", GL_RGB);
+	Texture containerTex("res/textures/shiba.png", GL_RGB);
 
-	Texture faceTex("res/textures/awesomeface.png", GL_RGBA);
+	//Texture faceTex("res/textures/awesomeface.png", GL_RGBA);
 
 #pragma endregion
 	
@@ -147,7 +91,7 @@ int main(int argc, char** argv)
 	shader.use();
 
 	shader.setTextureIndex("outTexture", 0);
-	shader.setTextureIndex("outTexture2", 1);
+	//shader.setTextureIndex("outTexture2", 1);
 
 	
 #pragma region camera bagulhos
@@ -164,8 +108,6 @@ int main(int argc, char** argv)
 	glm::mat4 projection;
 	float ratio = SCREEN_WIDTH / SCREEN_HEIGHT;
 
-
-	glEnable(GL_DEPTH_TEST);
 
 	glm::vec3 cubePositions[] = {
 	glm::vec3(0.0f,  0.0f,  0.0f),
@@ -234,38 +176,20 @@ int main(int argc, char** argv)
 		
 		shader.use();
 		
-
 		containerTex.bindTexture(0);
-		faceTex.bindTexture(1);
-
-		glBindVertexArray(vao);
-		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		//glDrawArrays(GL_TRIANGLES, 0, 36);
-
-	/*	for (unsigned int i = 0; i < 10; i++)
-		{
-			glm::mat4 model(1.0f);
-			model = glm::translate(model, cubePositions[i]);
-			float angle = 20.0f * i;
-			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-			shader.setMat4("model", model);
-
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-		}*/
 
 		glm::mat4 model(1.0f);
 		model = glm::translate(model, cubePositions[0]);
-		float angle = 45.0f;
+		float angle = 45.0f * deltaTime;
 		model = glm::rotate(model, glm::radians(angle), glm::vec3(0.0f, -1.0f, 0.0f));
 
 		shader.setMat4("model", model);
 
-		ebo.Bind();
-
+		glBindVertexArray(vaoVert);
+		vboVert.Bind();
+		eboVert.Bind();
 		int size;  glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
 		glDrawElements(GL_TRIANGLES, size / sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
-
-		//std::cout << "size of elment array buffer: " << size << " DVIDIDED: " << (size / sizeof(GLushort)) << std::endl;
 
 		SDL_GL_SwapWindow(window);
 

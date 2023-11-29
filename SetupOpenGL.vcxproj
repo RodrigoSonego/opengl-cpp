@@ -148,12 +148,16 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="BufferObject.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="fragment.frag" />
     <None Include="sqFra.frag" />
     <None Include="sqrVer.vert" />
     <None Include="vertex.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="SetupOpenGL.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

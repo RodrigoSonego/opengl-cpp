@@ -7,6 +7,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
 #include <glad/glad.h>
+#include "Vertex.h"
 
 char* FileReader::readTextFile(const char* pathToFile)
 {
@@ -46,7 +47,7 @@ unsigned char* FileReader::readImageFile(const char* pathToFile, int* width, int
 	return data;
 }
 
-void FileReader::load_obj(const char* filename, std::vector<glm::vec3>& vertices, std::vector<glm::vec3>& normals, std::vector<GLushort>& elements)
+void FileReader::load_obj(const char* filename, std::vector<Vertex>& outVertices, std::vector<GLushort>& outIndices)
 {
 	std::ifstream in(filename, std::ios::in);
 	if (!in)
@@ -55,65 +56,74 @@ void FileReader::load_obj(const char* filename, std::vector<glm::vec3>& vertices
 		exit(1);
 	}
 
+	std::vector<glm::vec3> tempPositions;
+	std::vector<glm::vec2> tempCoords;
+
 	std::string line;
 	while (getline(in, line))
 	{
 		if (line.substr(0, 2) == "v ")
 		{
-			std::istringstream s(line.substr(2));
-			glm::vec4 v;
-			s >> v.x;
-			s >> v.y;
-			s >> v.z;
-			v.w = 1.0f;
-			vertices.push_back(v);
+			std::istringstream stream(line.substr(2));
+			glm::vec3 tempVertex;
+			stream >> tempVertex.x;
+			stream >> tempVertex.y;
+			stream >> tempVertex.z;
+
+			tempPositions.push_back(tempVertex);
+		}
+		else if (line.substr(0, 2) == "vt") {
+			std::istringstream stream(line.substr(2));
+			glm::vec2 tempCoord;
+
+			stream >> tempCoord.x;
+			stream >> tempCoord.y;
+
+			//tempCoord.y = 1 - tempCoord.y;
+			tempCoords.push_back(tempCoord);
 		}
 		else if (line.substr(0, 2) == "f ")
 		{
-			std::istringstream s(line.substr(2));
-			GLushort a, b, c, ign;
+			std::istringstream stream(line.substr(2));
+			GLushort posIndex, b, c, ign;
+			GLushort texIndex, uvB, uvC;
 			
-			std::cout << s.str() << std::endl;
+			std::cout << stream.str() << std::endl;
 
-			s >> a;
-			s.ignore();
-			s >> ign;
-			s.ignore();
-			s >> ign;
+			for (short i = 0; i < 3; i++)
+			{
+				stream >> posIndex;
+				stream.ignore();
+				stream >> texIndex;
+				stream.ignore();
+				stream >> ign;
 
-			s >> b;
-			s.ignore();
-			s >> ign;
-			s.ignore();
-			s >> ign;
+				--posIndex;
+				--texIndex;
 
-			s >> c;
-			a--;
-			b--;
-			c--;
+				//uvIndices.push_back(texIndex);
+				//std::cout << "tempVer size: " << tempPositions.size() << " tempCoord: " << tempCoords.size() << " vertices: " << vertices.size() << std::endl;
+				//std::cout << "posIndex: " << posIndex << " texIndex: " << texIndex << std::endl;
+				
+				if (tempCoords.size() == 0) {
+					std::cout << "ERROR::OBJ::BAD:FORMAT::ABORTING";
+					return;
+				}
 
-			std::cout << a << " " << b << " " << c << std::endl;
-			elements.push_back(a);
-			elements.push_back(b);
-			elements.push_back(c);
+				Vertex tempVert;
+				tempVert.position = tempPositions[posIndex];
+				tempVert.texCoord = tempCoords[texIndex];
+
+				GLushort newIndex = outVertices.size();
+
+				outVertices.push_back(tempVert);
+
+				outIndices.push_back(newIndex);
+			}
 		}
 		/* anything else is ignored */
 	}
 
-	normals.resize(vertices.size(), glm::vec3(0.0, 0.0, 0.0));
-	for (int i = 0; i < elements.size(); i += 3)
-	{
-		GLushort ia = elements[i];
-		GLushort ib = elements[i + 1];
-		GLushort ic = elements[i + 2];
-		if (ia <= vertices.size() && ib <= vertices.size() && ic <= vertices.size())
-		{
-			glm::vec3 normal = glm::normalize(glm::cross(glm::vec3(vertices[ib]) - glm::vec3(vertices[ia]), glm::vec3(vertices[ic]) - glm::vec3(vertices[ia])));
-			normals[ia] = normals[ib] = normals[ic] = normal;
-		}
-		else
-		{
-			break;
-		}
-	}
+	
+	
 }
