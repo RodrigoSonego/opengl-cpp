@@ -28,6 +28,16 @@ void stopCapturingMouse();
 void processEscapePress();
 void processDrawModeChange();
 
+struct ModelPaths {
+	const char* modelPath;
+	const char* texturePath;
+
+	ModelPaths(const char* modelPath, const char* texturePath) {
+		this->modelPath = modelPath;
+		this->texturePath = texturePath;
+	}
+};
+
 int main(int argc, char** argv)
 {
 
@@ -52,13 +62,17 @@ int main(int argc, char** argv)
 
 #pragma endregion
 
+	ModelPaths cube("res/models/cube.obj", "res/textures/container.jpg");
+	ModelPaths shiba("res/models/shiba.obj", "res/textures/shiba.png");
+	ModelPaths necoarc("res/models/necoarc.obj", "res/textures/necoarc.png");
+	ModelPaths rayman("res/models/rayman.obj", "res/textures/rayman.png");
 
-	std::vector<Vertex> vertices;
-	std::vector<GLushort>  indices;
 
+	std::vector<Vertex>   vertices;
+	std::vector<GLushort> indices;
 
 	FileReader reader;
-	reader.load_obj("res/models/rayman.obj", vertices, indices);
+	reader.load_obj(cube.modelPath, vertices, indices);
 
 	BufferObject vbo(vertices.data(), vertices.size() * sizeof(vertices[0]), BufferObject::BufferType::Array);
 	BufferObject ebo(indices.data(), indices.size() * sizeof(indices[0]), BufferObject::BufferType::ElementArray);
@@ -83,7 +97,7 @@ int main(int argc, char** argv)
 
 #pragma region Texture
 	// Create and bind texture afterwards
-	Texture mainTexture("res/textures/rayman.png", GL_RGB);
+	Texture mainTexture(cube.texturePath, GL_RGB);
 
 	shader.use();
 
