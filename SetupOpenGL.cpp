@@ -26,6 +26,7 @@ SDL_Window* startOpenGLWindow();
 void captureMouse();
 void stopCapturingMouse();
 void processEscapePress();
+void processDrawModeChange();
 
 int main(int argc, char** argv)
 {
@@ -108,11 +109,10 @@ int main(int argc, char** argv)
 
 #pragma endregion
 
-
 	glClearColor(0.0f, 0.6f, 0.3f, 1.0f);
 
 	int start = SDL_GetTicks();
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glEnable(GL_DEPTH_TEST);
 
 	float deltaTime = 0.0f;	// Time between current frame and last frame
@@ -137,6 +137,7 @@ int main(int argc, char** argv)
 		
 		camera.moveWithKeyboard(deltaTime);
 		processEscapePress();
+		processDrawModeChange();
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -212,4 +213,15 @@ void processEscapePress()
 	const Uint8* keyState = SDL_GetKeyboardState(NULL);
 	
 	if (keyState[SDL_SCANCODE_ESCAPE]) { stopCapturingMouse(); }
+}
+
+void processDrawModeChange() {
+	const Uint8* keyState = SDL_GetKeyboardState(NULL);
+
+	if(keyState[SDL_SCANCODE_1])
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	if(keyState[SDL_SCANCODE_2])
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	if (keyState[SDL_SCANCODE_3])
+		glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
 }
