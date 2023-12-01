@@ -7,12 +7,12 @@
 
 Camera::Camera(glm::vec3 initialPos)
 {
-	cameraPos = initialPos;
+	cameraPosition = initialPos;
 }
 
 glm::mat4 Camera::getView()
 {
-	return glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);;
+	return glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);;
 }
 
 glm::mat4 Camera::getPerspective(float ratio)
@@ -20,18 +20,13 @@ glm::mat4 Camera::getPerspective(float ratio)
 	return glm::perspective(glm::radians(fov), ratio, nearPlane, farPlane);
 }
 
+// TODO: make this be able to rotate 360º horizontally
 void Camera::processMouseInput(SDL_Event ev)
 {
 	if (ev.type == SDL_MOUSEMOTION) {
-		float xPos = ev.button.x;
-		float yPos = ev.button.y;
 
-
-		float xOffset = xPos - lastMouseX;
-		float yOffset = lastMouseY - yPos;
-
-		lastMouseX = xPos;
-		lastMouseY = yPos;
+		float xOffset = ev.motion.xrel;
+		float yOffset = -ev.motion.yrel;
 
 		float sensitivity = 0.05f;
 		xOffset *= sensitivity;
@@ -44,14 +39,6 @@ void Camera::processMouseInput(SDL_Event ev)
 			pitch = 89.0f;
 		if (pitch < -89.0f)
 			pitch = -89.0f;
-
-		static bool firstMouse = true;
-		if (firstMouse)
-		{
-			firstMouse = false;
-			lastMouseX = xPos;
-			lastMouseY = yPos;
-		}
 
 		updateCameraFront();
 	}
@@ -81,13 +68,15 @@ void Camera::moveWithKeyboard(float deltaTime, float speedModifier)
 	const Uint8* keyState;
 	keyState = SDL_GetKeyboardState(NULL);
 	if (keyState[SDL_SCANCODE_W])
-		cameraPos += cameraSpeed * cameraFront;
+		cameraPosition += cameraSpeed * glm::vec3(1, 0, 1) * cameraFront;
 	if (keyState[SDL_SCANCODE_S])
-		cameraPos -= cameraSpeed * cameraFront;
+		cameraPosition -= cameraSpeed * glm::vec3(1, 0, 1) * cameraFront;
 	if (keyState[SDL_SCANCODE_A])
-		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		cameraPosition -= glm::normalize(glm::cross(cameraFront, cameraUp)) * glm::vec3(1, 0, 1) * cameraSpeed;
 	if (keyState[SDL_SCANCODE_D])
-		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		cameraPosition += glm::normalize(glm::cross(cameraFront, cameraUp)) * glm::vec3(1, 0, 1) * cameraSpeed;
+
+	cameraPosition = glm::clamp(cameraPosition, cameraMinPos, cameraMaxPos);
 }
 
 
