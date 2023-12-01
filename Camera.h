@@ -38,9 +38,6 @@ private:
 	float pitch = 0.0f; // Equivalent to rotation on the X axis on Unity
 	float yaw = -90.0f;
 
-	float lastMouseX = 400;
-	float lastMouseY = 300;
-
 	const glm::vec3 cameraMaxPos = glm::vec3(5, 2.5, 6);
 	const glm::vec3 cameraMinPos = glm::vec3(-5, -2, -6);
 

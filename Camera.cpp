@@ -24,15 +24,9 @@ glm::mat4 Camera::getPerspective(float ratio)
 void Camera::processMouseInput(SDL_Event ev)
 {
 	if (ev.type == SDL_MOUSEMOTION) {
-		float xPos = ev.button.x;
-		float yPos = ev.button.y;
-
 
 		float xOffset = ev.motion.xrel;
 		float yOffset = -ev.motion.yrel;
-
-		lastMouseX = xPos;
-		lastMouseY = yPos;
 
 		float sensitivity = 0.05f;
 		xOffset *= sensitivity;
@@ -45,14 +39,6 @@ void Camera::processMouseInput(SDL_Event ev)
 			pitch = 89.0f;
 		if (pitch < -89.0f)
 			pitch = -89.0f;
-
-		static bool firstMouse = true;
-		if (firstMouse)
-		{
-			firstMouse = false;
-			lastMouseX = xPos;
-			lastMouseY = yPos;
-		}
 
 		updateCameraFront();
 	}
@@ -89,14 +75,8 @@ void Camera::moveWithKeyboard(float deltaTime, float speedModifier)
 		cameraPosition -= glm::normalize(glm::cross(cameraFront, cameraUp)) * glm::vec3(1, 0, 1) * cameraSpeed;
 	if (keyState[SDL_SCANCODE_D])
 		cameraPosition += glm::normalize(glm::cross(cameraFront, cameraUp)) * glm::vec3(1, 0, 1) * cameraSpeed;
-	if (keyState[SDL_SCANCODE_Q])
-		cameraPosition += glm::vec3(0, 1, 0) * cameraSpeed;
-	if (keyState[SDL_SCANCODE_E])
-		cameraPosition -= glm::vec3(0, 0.7, 0) * cameraSpeed;
 
 	cameraPosition = glm::clamp(cameraPosition, cameraMinPos, cameraMaxPos);
-
-	//std::cout << "x: " << cameraPosition.x << " y: " << cameraPosition.y << " z: " << cameraPosition.z << std::endl;
 }
 
 

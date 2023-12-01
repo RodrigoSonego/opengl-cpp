@@ -66,13 +66,13 @@ int main(int argc, char** argv)
 	ModelPaths shiba("res/models/shiba.obj", "res/textures/shiba.png");
 	ModelPaths necoarc("res/models/necoarc.obj", "res/textures/necoarc.png");
 	ModelPaths rayman("res/models/rayman.obj", "res/textures/rayman.png");
-
+	ModelPaths vila("res/models/Vila do Chaves.obj", "res/textures/bricks-wall.jpeg");
 
 	std::vector<Vertex>   vertices;
 	std::vector<GLushort> indices;
 
 	FileReader reader;
-	reader.load_obj(cube.modelPath, vertices, indices);
+	reader.load_obj(rayman.modelPath, vertices, indices);
 
 	BufferObject vbo(vertices.data(), vertices.size() * sizeof(vertices[0]), BufferObject::BufferType::Array);
 	BufferObject ebo(indices.data(), indices.size() * sizeof(indices[0]), BufferObject::BufferType::ElementArray);
@@ -97,7 +97,7 @@ int main(int argc, char** argv)
 
 #pragma region Texture
 	// Create and bind texture afterwards
-	Texture mainTexture(cube.texturePath, GL_RGB);
+	Texture mainTexture(rayman.texturePath, GL_RGB);
 
 	shader.use();
 
