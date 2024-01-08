@@ -15,6 +15,8 @@
 #include <vector>
 #include "FileReader.h"
 
+#include "SpriteRenderer.h"
+
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 
@@ -62,46 +64,17 @@ int main(int argc, char** argv)
 
 #pragma endregion
 
-	ModelPaths cube("res/models/cube.obj", "res/textures/container.jpg");
-	ModelPaths shiba("res/models/shiba.obj", "res/textures/shiba.png");
-	ModelPaths necoarc("res/models/necoarc.obj", "res/textures/necoarc.png");
-	ModelPaths rayman("res/models/rayman.obj", "res/textures/rayman.png");
-	ModelPaths vila("res/models/Vila do Chaves.obj", "res/textures/bricks-wall.jpeg");
-
-	std::vector<Vertex>   vertices;
-	std::vector<GLushort> indices;
-
-	FileReader reader;
-	reader.load_obj(rayman.modelPath, vertices, indices);
-
-	BufferObject vbo(vertices.data(), vertices.size() * sizeof(vertices[0]), BufferObject::BufferType::Array);
-	BufferObject ebo(indices.data(), indices.size() * sizeof(indices[0]), BufferObject::BufferType::ElementArray);
-	
-
-	GLuint vao; // Vertex Array Object
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-
-	// Binding buffers to the VAO
-	vbo.Bind();
-	ebo.Bind();
-
 	Shader shader("vertex.vert", "fragment.frag");
 
-#pragma region Vertex Attribs
-	
-	shader.enableVertexAttribArray("position", 3, 5, 0);
-	shader.enableVertexAttribArray("texCoord", 2, 5, 3);
-
-#pragma endregion
+	SpriteRenderer renderer(shader);
 
 #pragma region Texture
 	// Create and bind texture afterwards
-	Texture mainTexture(rayman.texturePath, GL_RGB);
+	Texture mainTexture("res/textures/awesomeface.png", GL_RGBA);
 
 	shader.use();
 
-	shader.setTextureIndex("outTexture", 0);
+	shader.setTextureIndex("image", 0);
 	mainTexture.bindTexture(0);
 
 #pragma endregion
@@ -117,7 +90,13 @@ int main(int argc, char** argv)
 	
 	Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
-	glm::mat4 projection;
+	//glm::mat4 projection;
+
+	glm::mat4 projection = glm::ortho(0.0f, (float)SCREEN_WIDTH,
+		(float)SCREEN_HEIGHT, 0.0f, -1.0f, 1.0f);
+
+	shader.setMat4("projection", projection);
+
 	float ratio = SCREEN_WIDTH / SCREEN_HEIGHT;
 
 
@@ -132,7 +111,10 @@ int main(int argc, char** argv)
 	float deltaTime = 0.0f;	// Time between current frame and last frame
 	float lastFrameTime = SDL_GetTicks(); // Time of last frame
 
-	captureMouse();
+	glm::vec2 position = glm::vec2(0.0f, 0.0f);
+	glm::vec2 size = glm::vec2(300.0f, 400.0f);
+	float rotate = 0.f;
+	glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
 
 	SDL_Event windowEvent;
 	while (true)
@@ -146,46 +128,11 @@ int main(int argc, char** argv)
 		while (SDL_PollEvent(&windowEvent) != 0) {
 			if (windowEvent.type == SDL_QUIT) break;
 
-			camera.processMouseInput(windowEvent);
 		}
-		
-		camera.moveWithKeyboard(deltaTime);
-		processEscapePress();
-		processDrawModeChange();
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-#pragma region Camera setup on loop
-		glm::mat4 view = camera.getView();
-		shader.setMat4("view", view);
-
-		projection = camera.getPerspective(ratio);
 		
-		shader.setMat4("projection", projection);
-#pragma endregion
-
-		
-
-
-#pragma region Position and Rotate object
-
-		glm::mat4 model(1.0f);
-		model = glm::translate(model, glm::vec3(0,0,0));
-		float angle = 45.0f;
-		model = glm::rotate(model, glm::radians(angle), glm::vec3(0.0f, -1.0f, 0.0f));
-		shader.setMat4("model", model);
-
-		transMat = glm::rotate(transMat, deltaTime, glm::vec3(0.0f, 0.3f, 0.0f));
-		shader.setMat4("transform", transMat);
-
-#pragma endregion
-
-
-		int bufferSize;
-		glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &bufferSize);
-	
-		// Get number of elements to draw based on buffer size
-		glDrawElements(GL_TRIANGLES, bufferSize / sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
+		renderer.RenderSprite(mainTexture, position, size, rotate, color);
 
 		SDL_GL_SwapWindow(window);
 

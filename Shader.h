@@ -11,7 +11,7 @@ public:
 	/// <param name="vertexPath">path to the vertex shader</param>
 	/// <param name="fragmentPath">path to the fragment shader</param>
 	Shader(const char* vertexPath, const char* fragmentPath);
-
+	Shader() { }
 	void use();
 
 	/// <summary>
@@ -29,6 +29,9 @@ public:
 	/// <param name="name">property name</param>
 	/// <param name="mat">matrix value to be set</param>
 	void setMat4(const char* name, glm::mat4 mat) const;
+
+	void setVec3f(const char* name, glm::vec3 mat) const;
+
 
 	/// <summary>
 	/// Attributes a texture uniform to a texture index

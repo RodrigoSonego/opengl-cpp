@@ -35,6 +35,11 @@ void Shader::setMat4(const char* name, glm::mat4 mat) const
 	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(mat));
 }
 
+void Shader::setVec3f(const char* name, glm::vec3 mat) const
+{
+	glUniform3f(glGetUniformLocation(id, name), mat.x, mat.y, mat.z);
+}
+
 void Shader::setTextureIndex(const char* name, int index) const
 {
 	GLint location = glGetUniformLocation(id, name);

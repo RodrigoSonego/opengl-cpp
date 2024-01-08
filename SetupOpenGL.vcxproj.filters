@@ -39,6 +39,9 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
+    <ClCompile Include="SpriteRenderer.cpp">
+      <Filter>Arquivos de Origem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dependencies\stb_image\stb_image.h">
@@ -62,11 +65,12 @@
     <ClInclude Include="Vertex.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
+    <ClInclude Include="SpriteRenderer.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="vertex.vert" />
     <None Include="fragment.frag" />
-    <None Include="sqFra.frag" />
-    <None Include="sqrVer.vert" />
   </ItemGroup>
 </Project>
