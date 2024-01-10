@@ -9,7 +9,7 @@ SpriteRenderer::SpriteRenderer(Shader spriteShader)
 	this->spriteShader = spriteShader;
 }
 
-void SpriteRenderer::RenderSprite(Texture tex, glm::vec2 position, glm::vec2 size, float rotation, glm::vec3 color)
+void SpriteRenderer::RenderSprite(Texture tex, glm::vec2 position, glm::vec2 size, float rotation, glm::vec2 spriteIndex, glm::vec3 color)
 {
 	spriteShader.use();
 	glm::mat4 model = glm::mat4(1.0f);
@@ -29,15 +29,18 @@ void SpriteRenderer::RenderSprite(Texture tex, glm::vec2 position, glm::vec2 siz
 	//glActiveTexture(GL_TEXTURE0);
 	tex.bindTexture(0);
 
+    float spriteWidth = 128.0f, spriteHeight = 128.0f;
+
     glm::vec2 newCoords[] = {
-        {0.5f, 0.5f},
-        {0.0f, 0.5f},
-        {0.5f, 0.0f},
-        {0.0f, 0.0f},
+        {((spriteIndex.x + 1) * spriteWidth) / tex.width, ((spriteIndex.y + 1) * spriteHeight) / tex.height},   // TopR
+        {((spriteIndex.x + 1) * spriteWidth) / tex.width, (spriteIndex.y * spriteHeight) / tex.height},         // BotR
+        {(spriteIndex.x * spriteWidth) / tex.width, ((spriteIndex.y + 1) *spriteHeight) / tex.height },         // TopL
+        {(spriteIndex.x * spriteWidth) / tex.width, (spriteIndex.y * spriteHeight) / tex.height},               // BotL
     };
 
-    updateTextureCoordinates(newCoords);
+    //updateTextureCoordinates(newCoords);
 
+    spriteShader.setVec2Array("texCoords", newCoords, 4);
 
 	glBindVertexArray(this->quadVAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -49,11 +52,11 @@ void SpriteRenderer::RenderSprite(Texture tex, glm::vec2 position, glm::vec2 siz
 void SpriteRenderer::setupRendering()
 {
     float vertices[] = {
-        // pos           // tex
-        1.0f, 1.0f, 1.0f, 1.0f, // top right
-        1.0f, 0.0f, 1.0f, 0.0f, // bottom right
-        0.0f, 1.0f, 0.0f, 1.0f, // top left
-        0.0f, 0.0f, 0.0f, 0.0f  // bottom left
+        // pos
+        1.0f, 1.0f,
+        1.0f, 0.0f,
+        0.0f, 1.0f,
+        0.0f, 0.0f,
     };
 
     int indices[] = {
@@ -75,11 +78,7 @@ void SpriteRenderer::setupRendering()
 
     // Position attribute
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-
-    // Texture coordinate attribute
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
@@ -87,6 +86,7 @@ void SpriteRenderer::setupRendering()
 
 void SpriteRenderer::updateTextureCoordinates(glm::vec2* newTexCoords)
 {
+    glBindVertexArray(this->quadVAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferSubData(GL_ARRAY_BUFFER, 2 * sizeof(float), 2 * sizeof(float), newTexCoords);
     glBindBuffer(GL_ARRAY_BUFFER, 0);

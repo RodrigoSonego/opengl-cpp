@@ -8,7 +8,7 @@ class SpriteRenderer
 public:
 	SpriteRenderer(Shader spriteShader);
 
-	void RenderSprite(Texture tex, glm::vec2 position, glm::vec2 size, float rotation, glm::vec3 color = {1.f,1.f,1.f});
+	void RenderSprite(Texture tex, glm::vec2 position, glm::vec2 size, float rotation, glm::vec2 spriteIndex = { 0, 0 }, glm::vec3 color = {1.f,1.f,1.f});
 
 private:
 	void setupRendering();

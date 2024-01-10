@@ -30,6 +30,7 @@ public:
 	/// <param name="mat">matrix value to be set</param>
 	void setMat4(const char* name, glm::mat4 mat) const;
 
+	void setVec2Array(const char* name, const glm::vec2* values, int count);
 	void setVec3f(const char* name, glm::vec3 mat) const;
 
 

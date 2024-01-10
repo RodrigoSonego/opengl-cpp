@@ -70,7 +70,7 @@ int main(int argc, char** argv)
 
 #pragma region Texture
 	// Create and bind texture afterwards
-	Texture mainTexture("res/textures/awesomeface.png", GL_RGBA);
+	Texture mainTexture("res/textures/spritesheet.png", GL_RGBA);
 
 	shader.use();
 
@@ -111,8 +111,8 @@ int main(int argc, char** argv)
 	float deltaTime = 0.0f;	// Time between current frame and last frame
 	float lastFrameTime = SDL_GetTicks(); // Time of last frame
 
-	glm::vec2 position = glm::vec2(0.0f, 0.0f);
-	glm::vec2 size = glm::vec2(300.0f, 400.0f);
+	glm::vec2 position = glm::vec2(250.0f, 150.0f);
+	glm::vec2 size = glm::vec2(300.0f, 300.0f);
 	float rotate = 0.f;
 	glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
 
@@ -132,7 +132,7 @@ int main(int argc, char** argv)
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-		renderer.RenderSprite(mainTexture, position, size, rotate, color);
+		renderer.RenderSprite(mainTexture, position, size, rotate, glm::vec2(2, 2), color);
 
 		SDL_GL_SwapWindow(window);
 
