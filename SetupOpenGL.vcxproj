@@ -137,6 +137,8 @@
     <ClCompile Include="dependencies\glad\src\glad.c" />
     <ClCompile Include="dependencies\stb_image\stb_image.cpp" />
     <ClCompile Include="FileReader.cpp" />
+    <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="SetupOpenGL.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="BufferObject.cpp" />
@@ -147,6 +149,8 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="dependencies\stb_image\stb_image.h" />
     <ClInclude Include="FileReader.h" />
+    <ClInclude Include="Game.h" />
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="BufferObject.h" />
     <ClInclude Include="SpriteRenderer.h" />

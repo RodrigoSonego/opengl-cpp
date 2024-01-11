@@ -16,6 +16,8 @@
 #include "FileReader.h"
 
 #include "SpriteRenderer.h"
+#include "GameObject.h"
+#include "Game.h"
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
@@ -29,16 +31,6 @@ void captureMouse();
 void stopCapturingMouse();
 void processEscapePress();
 void processDrawModeChange();
-
-struct ModelPaths {
-	const char* modelPath;
-	const char* texturePath;
-
-	ModelPaths(const char* modelPath, const char* texturePath) {
-		this->modelPath = modelPath;
-		this->texturePath = texturePath;
-	}
-};
 
 int main(int argc, char** argv)
 {
@@ -111,10 +103,15 @@ int main(int argc, char** argv)
 	float deltaTime = 0.0f;	// Time between current frame and last frame
 	float lastFrameTime = SDL_GetTicks(); // Time of last frame
 
-	glm::vec2 position = glm::vec2(250.0f, 150.0f);
-	glm::vec2 size = glm::vec2(300.0f, 300.0f);
+	glm::vec2 position = glm::vec2(40.0f, 50.0f);
+	glm::vec2 size = glm::vec2(100.0f, 100.0f);
 	float rotate = 0.f;
 	glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
+	glm::vec2 velocity = glm::vec2(0.0f, 200.0f);
+
+	GameObject player(mainTexture, position, size, color, velocity);
+	Game game(player, renderer);
+
 
 	SDL_Event windowEvent;
 	while (true)
@@ -127,20 +124,20 @@ int main(int argc, char** argv)
 		// Event loop
 		while (SDL_PollEvent(&windowEvent) != 0) {
 			if (windowEvent.type == SDL_QUIT) break;
-
+			
 		}
+		game.ProcessInput(deltaTime);
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-		renderer.RenderSprite(mainTexture, position, size, rotate, glm::vec2(2, 2), color);
+
+		game.Draw();
 
 		SDL_GL_SwapWindow(window);
 
 	}
 
-	SDL_GL_DeleteContext(context);
-	SDL_DestroyWindow(window);
-	SDL_Quit();
+	
 	return 0;
 }
 
