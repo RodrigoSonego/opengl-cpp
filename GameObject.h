@@ -1,7 +1,7 @@
 #pragma once
 #include "glad/glad.h"
 #include "glm/glm.hpp"
-#include "Texture.h"
+#include "SubTexture.h"
 #include "SpriteRenderer.h"
 
 class GameObject
@@ -12,10 +12,13 @@ public:
 	glm::vec2 Velocity;
 	glm::vec3 Color;
 
-	Texture Sprite;
+	float Rotation;
 
-	GameObject(Texture& tex, glm::vec2 position, glm::vec2 size, glm::vec3 color = {1.f, 1.f, 1.f}, glm::vec2 velocity = { 0.0f, 0.0f } );
+	SubTexture Sprite;
+
+	GameObject(SubTexture& sprite, glm::vec2 position, glm::vec2 size, float rotation = 0.f, glm::vec3 color = {1.f, 1.f, 1.f}, glm::vec2 velocity = { 0.0f, 0.0f } );
 
 	void Draw(SpriteRenderer& renderer);
+	void Draw(SpriteRenderer& renderer, int numberOfFrames);
 };
 

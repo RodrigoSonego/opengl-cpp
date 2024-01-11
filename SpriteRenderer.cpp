@@ -1,6 +1,7 @@
 #include "SpriteRenderer.h"
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <SDL.h>
 
 SpriteRenderer::SpriteRenderer(Shader spriteShader)
 {
@@ -47,6 +48,62 @@ void SpriteRenderer::RenderSprite(Texture tex, glm::vec2 position, glm::vec2 siz
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+}
+
+void SpriteRenderer::RenderSprite(Texture tex, glm::vec2 position, glm::vec2 size, float rotation, glm::vec2 texCoords[4], glm::vec3 color)
+{
+    spriteShader.use();
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(position, 0.0f));  // first translate (transformations are: scale happens first, then rotation, and then final translation happens; reversed order)
+
+    model = glm::translate(model, glm::vec3(0.5f * size.x, 0.5f * size.y, 0.0f)); // move origin of rotation to center of quad
+    model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 0.0f, 1.0f)); // then rotate
+    model = glm::translate(model, glm::vec3(-0.5f * size.x, -0.5f * size.y, 0.0f)); // move origin back
+
+    model = glm::scale(model, glm::vec3(size, 1.0f)); // last scale
+
+    spriteShader.setMat4("model", model);
+
+    // render textured quad
+    spriteShader.setVec3f("spriteColor", color);
+
+    //glActiveTexture(GL_TEXTURE0);
+    tex.bindTexture(0);
+
+    float spriteWidth = 128.0f, spriteHeight = 128.0f;
+
+    //updateTextureCoordinates(newCoords);
+
+    spriteShader.setVec2Array("texCoords", texCoords, 4);
+
+    glBindVertexArray(this->quadVAO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+}
+
+void SpriteRenderer::RenderSprite(SubTexture subTex, glm::vec2 position, glm::vec2 size, float rotation, glm::vec3 color)
+{
+    RenderSprite(subTex.getTexture(), position, size, rotation, subTex.getTexCoords(), color);
+}
+
+void SpriteRenderer::RenderAnimatedSprite(SubTexture subTex, int nFrames, float delayBetweenFrames, float deltaTime)
+{
+    //Texture tex = subTex.getTexture();
+    //int rows = tex.width / subTex.getSize().x;
+    //int columns = tex.height / subTex.getSize().y;
+    //int framesDrawn = 1;
+
+    //glm::vec2 spritePos = subTex.getSpritePosition();
+    //
+    //float currentFrameTime = delayBetweenFrames;
+    //
+    //currentFrameTime -= deltaTime;
+
+    //if (currentFrameTime >= 0) {
+
+    //}
 }
 
 void SpriteRenderer::setupRendering()

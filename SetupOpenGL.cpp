@@ -62,7 +62,7 @@ int main(int argc, char** argv)
 
 #pragma region Texture
 	// Create and bind texture afterwards
-	Texture mainTexture("res/textures/spritesheet.png", GL_RGBA);
+	Texture mainTexture("res/textures/graphics/Ship1.bmp", GL_RGB);
 
 	shader.use();
 
@@ -105,11 +105,13 @@ int main(int argc, char** argv)
 
 	glm::vec2 position = glm::vec2(40.0f, 50.0f);
 	glm::vec2 size = glm::vec2(100.0f, 100.0f);
-	float rotate = 0.f;
+	float rotate = 90.f;
 	glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
 	glm::vec2 velocity = glm::vec2(0.0f, 200.0f);
 
-	GameObject player(mainTexture, position, size, color, velocity);
+	SubTexture sprite = SubTexture::createFromIndexes(mainTexture, glm::vec2(3, 0), glm::vec2(64, 64));
+
+	GameObject player(sprite, position, size, rotate, color, velocity);
 	Game game(player, renderer);
 
 
