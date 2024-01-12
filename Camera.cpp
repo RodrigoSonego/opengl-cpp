@@ -12,7 +12,8 @@ Camera::Camera(glm::vec3 initialPos)
 
 glm::mat4 Camera::getView()
 {
-	return glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);;
+	glm::mat4 transform = glm::translate(glm::mat4(1.0f), cameraPosition);
+	return glm::inverse(transform);
 }
 
 glm::mat4 Camera::getPerspective(float ratio)

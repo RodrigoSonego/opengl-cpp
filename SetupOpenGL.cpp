@@ -58,11 +58,11 @@ int main(int argc, char** argv)
 
 	Shader shader("vertex.vert", "fragment.frag");
 
-	SpriteRenderer renderer(shader);
 
 #pragma region Texture
 	// Create and bind texture afterwards
 	Texture mainTexture("res/textures/graphics/Ship1.bmp", GL_RGB);
+	Texture background("res/textures/graphics/galaxy2.bmp", GL_RGB);
 
 	shader.use();
 
@@ -80,17 +80,17 @@ int main(int argc, char** argv)
 #pragma region Camera
 	// // // // CAMERA STUFF // // // //
 	
-	Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+	Camera camera(glm::vec3(0.0f, 0.0f, 0.5f));
 
 	//glm::mat4 projection;
 
-	glm::mat4 projection = glm::ortho(0.0f, (float)SCREEN_WIDTH,
-		(float)SCREEN_HEIGHT, 0.0f, -1.0f, 1.0f);
+	glm::mat4 projection = glm::ortho(0.0f, 800.f, 600.f, 0.0f);
 
 	shader.setMat4("projection", projection);
 
 	float ratio = SCREEN_WIDTH / SCREEN_HEIGHT;
 
+	SpriteRenderer renderer(shader, camera);
 
 #pragma endregion
 
@@ -103,17 +103,25 @@ int main(int argc, char** argv)
 	float deltaTime = 0.0f;	// Time between current frame and last frame
 	float lastFrameTime = SDL_GetTicks(); // Time of last frame
 
-	glm::vec2 position = glm::vec2(40.0f, 50.0f);
+	glm::vec3 position = glm::vec3(20.0f, 300.0f, 0.0f);
 	glm::vec2 size = glm::vec2(100.0f, 100.0f);
 	float rotate = 90.f;
 	glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
-	glm::vec2 velocity = glm::vec2(0.0f, 200.0f);
+	glm::vec2 velocity = glm::vec2(200.0f, 200.0f);
 
 	SubTexture sprite = SubTexture::createFromIndexes(mainTexture, glm::vec2(3, 0), glm::vec2(64, 64));
 
 	GameObject player(sprite, position, size, rotate, color, velocity);
-	Game game(player, renderer);
+	Game game(player, renderer, background);
 
+	Texture asteroid("res/textures/graphics/GAster32.bmp", GL_RGB);
+	SubTexture astSprite = SubTexture::createFromIndexes(asteroid, glm::vec2(0.f, 0.f), glm::vec2(32.f, 32.f));
+	GameObject ast(astSprite, glm::vec3(100, 100, 0), glm::vec2(100, 100));
+
+	game.objects.push_back(&ast);
+	//game.objects.push_back(player);
+
+	game.Init();
 
 	SDL_Event windowEvent;
 	while (true)
@@ -130,8 +138,11 @@ int main(int argc, char** argv)
 		}
 		game.ProcessInput(deltaTime);
 
+		game.Update(deltaTime);
+
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		
+
+		shader.setMat4("view", camera.getView());
 
 		game.Draw();
 
