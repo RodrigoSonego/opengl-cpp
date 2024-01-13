@@ -157,6 +157,7 @@
     <ClInclude Include="SpriteRenderer.h" />
     <ClInclude Include="SubTexture.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="Transform.h" />
     <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <ItemGroup>

@@ -3,20 +3,19 @@
 #include "glm/glm.hpp"
 #include "SubTexture.h"
 #include "SpriteRenderer.h"
+#include "Transform.h"
 
 class GameObject
 {
 public:
-	glm::vec3 Position;
-	glm::vec2 Size;
 	glm::vec2 Velocity;
 	glm::vec3 Color;
 
-	float Rotation;
+	Transform transform;
 
 	SubTexture Sprite;
 
-	GameObject* parent = nullptr;
+	Transform* parent = nullptr;
 
 	glm::mat4 modelMatrix;
 

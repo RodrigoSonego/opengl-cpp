@@ -7,13 +7,13 @@
 
 Camera::Camera(glm::vec3 initialPos)
 {
-	cameraPosition = initialPos;
+	transform.position = initialPos;
 }
 
 glm::mat4 Camera::getView()
 {
-	glm::mat4 transform = glm::translate(glm::mat4(1.0f), cameraPosition);
-	return glm::inverse(transform);
+	glm::mat4 modelMat = glm::translate(glm::mat4(1.0f), transform.position );
+	return glm::inverse(modelMat);
 }
 
 glm::mat4 Camera::getPerspective(float ratio)
@@ -65,19 +65,19 @@ void Camera::updateCameraFront() {
 
 void Camera::moveWithKeyboard(float deltaTime, float speedModifier)
 {
-	float cameraSpeed = speedModifier * deltaTime; // adjust accordingly
-	const Uint8* keyState;
-	keyState = SDL_GetKeyboardState(NULL);
-	if (keyState[SDL_SCANCODE_W])
-		cameraPosition += cameraSpeed * glm::vec3(1, 0, 1) * cameraFront;
-	if (keyState[SDL_SCANCODE_S])
-		cameraPosition -= cameraSpeed * glm::vec3(1, 0, 1) * cameraFront;
-	if (keyState[SDL_SCANCODE_A])
-		cameraPosition -= glm::normalize(glm::cross(cameraFront, cameraUp)) * glm::vec3(1, 0, 1) * cameraSpeed;
-	if (keyState[SDL_SCANCODE_D])
-		cameraPosition += glm::normalize(glm::cross(cameraFront, cameraUp)) * glm::vec3(1, 0, 1) * cameraSpeed;
+	//float cameraSpeed = speedModifier * deltaTime; // adjust accordingly
+	//const Uint8* keyState;
+	//keyState = SDL_GetKeyboardState(NULL);
+	//if (keyState[SDL_SCANCODE_W])
+	//	cameraPosition += cameraSpeed * glm::vec3(1, 0, 1) * cameraFront;
+	//if (keyState[SDL_SCANCODE_S])
+	//	cameraPosition -= cameraSpeed * glm::vec3(1, 0, 1) * cameraFront;
+	//if (keyState[SDL_SCANCODE_A])
+	//	cameraPosition -= glm::normalize(glm::cross(cameraFront, cameraUp)) * glm::vec3(1, 0, 1) * cameraSpeed;
+	//if (keyState[SDL_SCANCODE_D])
+	//	cameraPosition += glm::normalize(glm::cross(cameraFront, cameraUp)) * glm::vec3(1, 0, 1) * cameraSpeed;
 
-	cameraPosition = glm::clamp(cameraPosition, cameraMinPos, cameraMaxPos);
+	//cameraPosition = glm::clamp(cameraPosition, cameraMinPos, cameraMaxPos);
 }
 
 

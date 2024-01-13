@@ -1,6 +1,7 @@
 #pragma once
 #include <glm/glm.hpp>
 #include <SDL.h>
+#include "Transform.h"
 
 class Camera
 {
@@ -10,7 +11,7 @@ public:
 	const float nearPlane = 0.1f;
 	const float farPlane = 100.f;
 
-	glm::vec3 cameraPosition;
+	Transform transform;
 
 	glm::mat4 getView();
 	glm::mat4 getPerspective(float ratio);

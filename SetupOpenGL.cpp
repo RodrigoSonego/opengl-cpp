@@ -112,7 +112,7 @@ int main(int argc, char** argv)
 	SubTexture sprite = SubTexture::createFromIndexes(mainTexture, glm::vec2(3, 0), glm::vec2(64, 64));
 
 	GameObject player(sprite, position, size, rotate, color, velocity);
-	Game game(player, renderer, background);
+	Game game(player, renderer, background, camera);
 
 	Texture asteroid("res/textures/graphics/GAster32.bmp", GL_RGB);
 	SubTexture astSprite = SubTexture::createFromIndexes(asteroid, glm::vec2(0.f, 0.f), glm::vec2(32.f, 32.f));
