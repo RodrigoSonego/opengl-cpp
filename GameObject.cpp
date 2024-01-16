@@ -17,23 +17,7 @@ void GameObject::Draw(SpriteRenderer& renderer)
 
 void GameObject::Draw(SpriteRenderer& renderer, int numberOfFrames, float deltaTime)
 {
-	if (currentFrame == numberOfFrames-1) { currentFrame = 0; }
-
-	float delayBtweenFrames = 0.2f;
-
-	Texture* tex = Sprite->getTexture();
-
-	elapsedTime += deltaTime;
-	if (elapsedTime >= delayBtweenFrames) {
-		elapsedTime = 0;
-
-		glm::vec2 next = glm::vec2(Sprite->getSpritePosition().x + 1.0f, Sprite->getSpritePosition().y);
-		Sprite->updateSpritePosition(next);
-
-		std::cout << "new sprite pos: " << Sprite->getSpritePosition().x << ", " << Sprite->getSpritePosition().y << std::endl;
-
-		++currentFrame;
-	}
+	animator.play(Sprite, numberOfFrames, deltaTime, true);
 
 	Draw(renderer);
 }

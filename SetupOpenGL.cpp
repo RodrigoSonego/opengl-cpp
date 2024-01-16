@@ -115,7 +115,7 @@ int main(int argc, char** argv)
 	Game game(player, renderer, background, camera);
 
 	Texture asteroidTex("res/textures/graphics/GAster64.bmp", GL_RGB);
-	SubTexture astSprite = SubTexture::createFromIndexes(&asteroidTex, glm::vec2(0.f, 0.f), glm::vec2(64.f, 64.f));
+	SubTexture astSprite = SubTexture::createFromIndexes(&asteroidTex, glm::vec2(7.f, 0.f), glm::vec2(64.f, 64.f));
 	GameObject ast(astSprite, glm::vec3(100, 100, 0), glm::vec2(100, 100));
 
 	game.objects.push_back(&ast);

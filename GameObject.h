@@ -4,6 +4,7 @@
 #include "SubTexture.h"
 #include "SpriteRenderer.h"
 #include "Transform.h"
+#include "Animator.h"
 
 class GameObject
 {
@@ -29,6 +30,7 @@ public:
 
 private:
 
+	Animator animator;
 	float elapsedTime = 0.0f;
 	int currentFrame = 0;
 

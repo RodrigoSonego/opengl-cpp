@@ -54,7 +54,7 @@ void Game::Update(float deltaTime)
 void Game::Draw(float deltaTime)
 {
 	//m_Player.Draw(m_Renderer);
-	objects[1]->Draw(m_Renderer, 24, deltaTime);
+	objects[1]->Draw(m_Renderer, 7, deltaTime);
 	/*for (GameObject* obj : objects)
 	{
 		obj->Draw(m_Renderer);
