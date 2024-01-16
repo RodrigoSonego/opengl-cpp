@@ -5,20 +5,23 @@
 class SubTexture
 {
 public:
-	SubTexture(Texture& tex, glm::vec2 minCoord, glm::vec2 maxCoord, glm::vec2 spriteCoord);
+	SubTexture(Texture* tex, glm::vec2 spriteCoord, glm::vec2 spriteSize);
 
-	static SubTexture createFromIndexes(Texture& tex, glm::vec2 spriteIndices, glm::vec2 spriteSize);
+	static SubTexture createFromIndexes(Texture* tex, glm::vec2 spriteIndices, glm::vec2 spriteSize);
 	
 	glm::vec2* getTexCoords();
 	glm::vec2 getSpritePosition();
-	Texture& getTexture();
+	Texture* getTexture();
 	glm::vec2 getSize();
+	void updateSpritePosition(glm::vec2 position);
 
 private:
-	Texture& texture;
+	Texture* texture;
+
+	void calculateCoords();
 
 	glm::vec2 m_SpritePosition;
-	glm::vec2 size;
+	glm::vec2 m_Size;
 	glm::vec2 texCoords[4];
 };
 

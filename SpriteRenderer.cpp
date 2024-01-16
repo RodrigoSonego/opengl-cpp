@@ -10,13 +10,13 @@ SpriteRenderer::SpriteRenderer(Shader spriteShader, Camera camera)
 	this->spriteShader = spriteShader;
 }
 
-void SpriteRenderer::RenderSprite(Texture tex, glm::vec3 position, glm::vec2 size, float rotation, glm::vec2 spriteIndex, glm::vec3 color)
+void SpriteRenderer::RenderSprite(Texture* tex, glm::vec3 position, glm::vec2 size, float rotation, glm::vec2 spriteIndex, glm::vec3 color)
 {
     glm::vec2* coords = SubTexture::createFromIndexes(tex, spriteIndex, size).getTexCoords();
     RenderSprite(tex, position, size, rotation, coords, color);
 }
 
-void SpriteRenderer::RenderSprite(Texture tex, glm::vec3 position, glm::vec2 size, float rotation, glm::vec2 texCoords[4], glm::vec3 color)
+void SpriteRenderer::RenderSprite(Texture* tex, glm::vec3 position, glm::vec2 size, float rotation, glm::vec2 texCoords[4], glm::vec3 color)
 {
     spriteShader.use();
     glm::mat4 model = glm::mat4(1.0f);
@@ -34,7 +34,7 @@ void SpriteRenderer::RenderSprite(Texture tex, glm::vec3 position, glm::vec2 siz
     spriteShader.setVec3f("spriteColor", color);
 
     //glActiveTexture(GL_TEXTURE0);
-    tex.bindTexture(0);
+    tex->bindTexture(0);
 
     //updateTextureCoordinates(newCoords);
 
@@ -57,7 +57,7 @@ void SpriteRenderer::RenderSprite(SubTexture subTex, glm::mat4 modelMatrix, glm:
     spriteShader.setVec3f("spriteColor", color);
 
     //glActiveTexture(GL_TEXTURE0);
-    subTex.getTexture().bindTexture(0);
+    subTex.getTexture()->bindTexture(0);
 
     //updateTextureCoordinates(newCoords);
 

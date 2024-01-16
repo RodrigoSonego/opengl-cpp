@@ -14,7 +14,7 @@ public:
 	virtual void Init();
 	virtual void ProcessInput(float deltaTime);
 	virtual void Update(float deltaTime);
-	virtual void Draw();
+	virtual void Draw(float deltaTime);
 
 	std::vector<GameObject*> objects;
 

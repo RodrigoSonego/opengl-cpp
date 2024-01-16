@@ -43,7 +43,7 @@ void Game::Update(float deltaTime)
 {
 	//m_Player.UpdateModelMatrix();
 	//objects[0]->UpdateModelMatrix();
-	scrollPivot.position.x -= 10 * deltaTime;
+	//scrollPivot.position.x -= 30 * deltaTime;
 
 	for (GameObject* obj : objects)
 	{
@@ -51,15 +51,15 @@ void Game::Update(float deltaTime)
 	}
 }
 
-void Game::Draw()
+void Game::Draw(float deltaTime)
 {
 	//m_Player.Draw(m_Renderer);
-	//objects[0]->Draw(m_Renderer);
-	for (GameObject* obj : objects)
+	objects[1]->Draw(m_Renderer, 24, deltaTime);
+	/*for (GameObject* obj : objects)
 	{
 		obj->Draw(m_Renderer);
-	}
+	}*/
 
-	m_Renderer.RenderSprite(m_Background, glm::vec3(0.0f, 0.0f, -0.2f), glm::vec2(800.0f, 600.f), 0.0f);
+	//m_Renderer.RenderSprite(&m_Background, glm::vec3(0.0f, 0.0f, -0.2f), glm::vec2(800.0f, 600.f), 0.0f);
 	
 }

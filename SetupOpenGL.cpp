@@ -109,13 +109,13 @@ int main(int argc, char** argv)
 	glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
 	glm::vec2 velocity = glm::vec2(200.0f, 200.0f);
 
-	SubTexture sprite = SubTexture::createFromIndexes(mainTexture, glm::vec2(3, 0), glm::vec2(64, 64));
+	SubTexture sprite = SubTexture::createFromIndexes(&mainTexture, glm::vec2(3, 0), glm::vec2(64, 64));
 
 	GameObject player(sprite, position, size, rotate, color, velocity);
 	Game game(player, renderer, background, camera);
 
-	Texture asteroid("res/textures/graphics/GAster32.bmp", GL_RGB);
-	SubTexture astSprite = SubTexture::createFromIndexes(asteroid, glm::vec2(0.f, 0.f), glm::vec2(32.f, 32.f));
+	Texture asteroidTex("res/textures/graphics/GAster64.bmp", GL_RGB);
+	SubTexture astSprite = SubTexture::createFromIndexes(&asteroidTex, glm::vec2(0.f, 0.f), glm::vec2(64.f, 64.f));
 	GameObject ast(astSprite, glm::vec3(100, 100, 0), glm::vec2(100, 100));
 
 	game.objects.push_back(&ast);
@@ -144,7 +144,7 @@ int main(int argc, char** argv)
 
 		shader.setMat4("view", camera.getView());
 
-		game.Draw();
+		game.Draw(deltaTime);
 
 		SDL_GL_SwapWindow(window);
 

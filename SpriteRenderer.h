@@ -10,8 +10,8 @@ class SpriteRenderer
 public:
 	SpriteRenderer(Shader spriteShader, Camera camera);
 
-	void RenderSprite(Texture tex, glm::vec3 position, glm::vec2 size, float rotation, glm::vec2 spriteIndex = { 0, 0 }, glm::vec3 color = {1.f,1.f,1.f});
-	void RenderSprite(Texture tex, glm::vec3 position, glm::vec2 size, float rotation, glm::vec2 texCoords[4], glm::vec3 color = { 1.f,1.f,1.f });
+	void RenderSprite(Texture* tex, glm::vec3 position, glm::vec2 size, float rotation, glm::vec2 spriteIndex = { 0, 0 }, glm::vec3 color = {1.f,1.f,1.f});
+	void RenderSprite(Texture* tex, glm::vec3 position, glm::vec2 size, float rotation, glm::vec2 texCoords[4], glm::vec3 color = { 1.f,1.f,1.f });
 	void RenderSprite(SubTexture subTex, glm::vec3 position, glm::vec2 size, float rotation, glm::vec3 color = { 1.f,1.f,1.f });
 	void RenderSprite(SubTexture subTex, glm::mat4 modelMatrix, glm::vec3 color);
 

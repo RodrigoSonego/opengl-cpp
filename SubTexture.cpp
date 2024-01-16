@@ -1,23 +1,15 @@
 #include "SubTexture.h"
+#include "iostream"
 
-SubTexture::SubTexture(Texture& tex, glm::vec2 minCoord, glm::vec2 maxCoord, glm::vec2 spriteCoord)
-    : texture(tex), m_SpritePosition(spriteCoord)
+SubTexture::SubTexture(Texture* tex, glm::vec2 spriteCoord, glm::vec2 spriteSize)
+    : texture(tex), m_SpritePosition(spriteCoord), m_Size(spriteSize)
 {
-    texCoords[0] = { maxCoord.x, maxCoord.y };
-    texCoords[1] = { maxCoord.x, minCoord.y };
-    texCoords[2] = { minCoord.x, maxCoord.y };
-    texCoords[3] = { minCoord.x, minCoord.y };
-
-    size.x = maxCoord.x - minCoord.x;
-    size.y = maxCoord.y - minCoord.y;
+    calculateCoords();
 }
 
-SubTexture SubTexture::createFromIndexes(Texture& tex, glm::vec2 spriteIndices, glm::vec2 spriteSize)
+SubTexture SubTexture::createFromIndexes(Texture* tex, glm::vec2 spriteIndices, glm::vec2 spriteSize)
 {
-    glm::vec2 minCoord = { (spriteIndices.x * spriteSize.x) / tex.width, (spriteIndices.y * spriteSize.y) / tex.height };
-    glm::vec2 maxCoord = { ((spriteIndices.x + 1) * spriteSize.y) / tex.width, ((spriteIndices.y + 1) * spriteSize.y) / tex.height };
-
-    return SubTexture(tex, minCoord, maxCoord, spriteIndices);
+    return SubTexture(tex, spriteIndices, spriteSize);
 }
 
 glm::vec2* SubTexture::getTexCoords()
@@ -30,12 +22,36 @@ glm::vec2 SubTexture::getSpritePosition()
     return m_SpritePosition;
 }
 
-Texture& SubTexture::getTexture()
+Texture* SubTexture::getTexture()
 {
     return texture;
 }
 
 glm::vec2 SubTexture::getSize()
 {
-    return size;
+    return m_Size;
+}
+
+void SubTexture::updateSpritePosition(glm::vec2 position)
+{
+    float maxX = (texture->width / m_Size.x) - 1;
+    float maxY = (texture->height / m_Size.y) - 1;
+
+    if (position.x > maxX) { position = glm::vec2(0, position.y+1); }
+    if (position.y > maxY) { position = glm::vec2(0, 0); }
+
+    m_SpritePosition = position;
+
+    calculateCoords();
+}
+
+void SubTexture::calculateCoords()
+{
+    glm::vec2 minCoord = { (m_SpritePosition.x * m_Size.x) / texture->width, (m_SpritePosition.y * m_Size.y) / texture->height };
+    glm::vec2 maxCoord = { ((m_SpritePosition.x + 1) * m_Size.y) / texture->width, ((m_SpritePosition.y + 1) * m_Size.y) / texture->height };
+
+    texCoords[0] = { maxCoord.x, maxCoord.y };
+    texCoords[1] = { maxCoord.x, minCoord.y };
+    texCoords[2] = { minCoord.x, maxCoord.y };
+    texCoords[3] = { minCoord.x, minCoord.y };
 }
