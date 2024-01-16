@@ -1,18 +1,29 @@
 #include "Animator.h"
-
-void Animator::play(SubTexture* subTex, int numberOfFrames, float deltaTime, bool willLoop, bool playBackwards)
+#include <iostream>
+void Animator::play(SubTexture* subTex, int numberOfFrames, float deltaTime, 
+	bool willLoop, bool playBackwards, std::string animName)
 {
-	if (canPlay == false) { return; }
+	if (numberOfFrames == 0) { return; }
 
-	if (currentFrame == numberOfFrames - 1) {
+	if (isFinished && willLoop == false && currentAnimName == animName)
+	{
+		return;
+	}
+
+	if (currentFrame >= numberOfFrames - 1) {
 		if (willLoop)
 			currentFrame = 0;
 		else {
+			stopAllAnimations();
 			return;
 		}
 	}
 
-	float delayBtweenFrames = 0.2f;
+	currentAnimName = animName;
+	isFinished = false;
+	
+
+	float delayBtweenFrames = 0.13f;
 
 	Texture* tex = subTex->getTexture();
 
@@ -31,13 +42,13 @@ void Animator::play(SubTexture* subTex, int numberOfFrames, float deltaTime, boo
 
 void Animator::stopAllAnimations()
 {
-	canPlay = false;
-
 	currentFrame = 0;
 	timeElapsed = 0.0f;
+	isFinished = true;
 }
 
-void Animator::enablePlaying()
+int Animator::getCurrentFrame()
 {
-	canPlay = true;
+	return currentFrame;
 }
+

@@ -111,8 +111,8 @@ int main(int argc, char** argv)
 
 	SubTexture sprite = SubTexture::createFromIndexes(&mainTexture, glm::vec2(3, 0), glm::vec2(64, 64));
 
-	GameObject player(sprite, position, size, rotate, color, velocity);
-	Game game(player, renderer, background, camera);
+	Player player(sprite, position, size, rotate, color, velocity);
+	Game game(&player, renderer, background, camera);
 
 	Texture asteroidTex("res/textures/graphics/GAster64.bmp", GL_RGB);
 	SubTexture astSprite = SubTexture::createFromIndexes(&asteroidTex, glm::vec2(7.f, 0.f), glm::vec2(64.f, 64.f));
@@ -136,7 +136,7 @@ int main(int argc, char** argv)
 			if (windowEvent.type == SDL_QUIT) break;
 			
 		}
-		game.ProcessInput(deltaTime);
+		game.ProcessInput(deltaTime, windowEvent);
 
 		game.Update(deltaTime);
 

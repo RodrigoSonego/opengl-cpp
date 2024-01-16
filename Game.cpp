@@ -3,58 +3,61 @@
 #include <SDL.h>
 #include <iostream>
 
-Game::Game(GameObject player, SpriteRenderer renderer, Texture background, Camera camera)
+Game::Game(Player* player, SpriteRenderer renderer, Texture background, Camera camera)
 	: m_Player(player), m_Renderer(renderer), m_Background(background), m_Camera(camera)
 {
-	objects.push_back(&player);
-
 	scrollPivot.position = glm::vec3(0.0f);
 }
 
 void Game::Init()
 {
-	objects[1]->parent = &scrollPivot;
+	//objects[0]->parent = &scrollPivot;
 }
 
-void Game::ProcessInput(float deltaTime)
+void Game::ProcessInput(float deltaTime, SDL_Event ev)
 {
 	const Uint8* keyState = SDL_GetKeyboardState(NULL);
 
 	if (keyState[SDL_SCANCODE_W]) {
-		m_Player.transform.position.y -= m_Player.Velocity.y * deltaTime;
+		m_Player->transform.position.y -= m_Player->Velocity.y * deltaTime;
+		m_Player->setPlayerState(Player::MovingUp);
 	}
-	else if (keyState[SDL_SCANCODE_S])
-		m_Player.transform.position.y += m_Player.Velocity.y * deltaTime;
+	else if (keyState[SDL_SCANCODE_S]) {
+		m_Player->transform.position.y += m_Player->Velocity.y * deltaTime;
+		m_Player->setPlayerState(Player::MovingDown);
+	}
+	else {
+		m_Player->setPlayerState(Player::Idle);
+	}
 
-	float maxY = 600 - m_Player.transform.size.y;
+	float maxY = 600 - m_Player->transform.size.y;
 	
-	if (m_Player.transform.position.y > maxY) {
-		m_Player.transform.position.y = maxY;
+	if (m_Player->transform.position.y > maxY) {
+		m_Player->transform.position.y = maxY;
 		return;
 	}
 	
-	if (m_Player.transform.position.y < 0) {
-		m_Player.transform.position.y = 0;
+	if (m_Player->transform.position.y < 0) {
+		m_Player->transform.position.y = 0;
 	}
 
 }
 
 void Game::Update(float deltaTime)
 {
-	//m_Player.UpdateModelMatrix();
-	//objects[0]->UpdateModelMatrix();
+	m_Player->UpdateModelMatrix();
 	//scrollPivot.position.x -= 30 * deltaTime;
 
-	for (GameObject* obj : objects)
+	/*for (GameObject* obj : objects)
 	{
 		obj->UpdateModelMatrix();
-	}
+	}*/
 }
 
 void Game::Draw(float deltaTime)
 {
-	//m_Player.Draw(m_Renderer);
-	objects[1]->Draw(m_Renderer, 7, deltaTime);
+	m_Player->DrawPlayer(m_Renderer, deltaTime);
+	//objects[1]->Draw(m_Renderer, 7, deltaTime);
 	/*for (GameObject* obj : objects)
 	{
 		obj->Draw(m_Renderer);
