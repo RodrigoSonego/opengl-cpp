@@ -18,6 +18,7 @@
 #include "SpriteRenderer.h"
 #include "GameObject.h"
 #include "Game.h"
+#include "TextRenderer.h"
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
@@ -57,12 +58,13 @@ int main(int argc, char** argv)
 #pragma endregion
 
 	Shader shader("vertex.vert", "fragment.frag");
-
+	Shader textShader("textVert.vert", "fragment.frag");
 
 #pragma region Texture
 	// Create and bind texture afterwards
 	Texture mainTexture("res/textures/graphics/Ship1.bmp", GL_RGB);
 	Texture background("res/textures/graphics/galaxy2.bmp", GL_RGB);
+	Texture fontTexture("res/textures/graphics/font16x16.bmp", GL_RGB);
 
 	shader.use();
 
@@ -99,6 +101,7 @@ int main(int argc, char** argv)
 	int start = SDL_GetTicks();
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
 
 	float deltaTime = 0.0f;	// Time between current frame and last frame
 	float lastFrameTime = SDL_GetTicks(); // Time of last frame
@@ -120,6 +123,9 @@ int main(int argc, char** argv)
 
 	game.objects.push_back(&ast);
 	//game.objects.push_back(player);
+
+	TextRenderer textRenderer(&textShader, &fontTexture, glm::vec2(16.0f, 16.0f));
+
 
 	game.Init();
 
@@ -144,6 +150,8 @@ int main(int argc, char** argv)
 
 		shader.setMat4("view", camera.getView());
 
+		textRenderer.renderText("teste", glm::vec2(0.0f, 0.0f), 2.0f, glm::vec3(1.f, 1.f, 1.f));
+		
 		game.Draw(deltaTime);
 
 		SDL_GL_SwapWindow(window);
