@@ -31,7 +31,7 @@ void Player::setPlayerState(PlayerState state)
 		framesToAnim = Sprite->getSpritePosition().x - 3;
 	}
 	else if (state == PlayerState::MovingUp && m_State != PlayerState::MovingUp) {
-		framesToAnim = Sprite->getSpritePosition().x;
+		framesToAnim = Sprite->getSpritePosition().x + 1;
 	}
 	else if (state == PlayerState::MovingDown && m_State != PlayerState::MovingDown) {
 		framesToAnim = 7 - Sprite->getSpritePosition().x;
