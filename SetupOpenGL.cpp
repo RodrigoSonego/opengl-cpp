@@ -28,10 +28,7 @@
 /// </summary>
 /// <returns></returns>
 SDL_Window* startOpenGLWindow();
-void captureMouse();
-void stopCapturingMouse();
-void processEscapePress();
-void processDrawModeChange();
+Player& generatePlayer(SubTexture& subTex);
 
 int main(int argc, char** argv)
 {
@@ -106,26 +103,18 @@ int main(int argc, char** argv)
 	float deltaTime = 0.0f;	// Time between current frame and last frame
 	float lastFrameTime = SDL_GetTicks(); // Time of last frame
 
-	glm::vec3 position = glm::vec3(20.0f, 300.0f, 0.0f);
-	glm::vec2 size = glm::vec2(100.0f, 100.0f);
-	float rotate = 90.f;
-	glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
-	glm::vec2 velocity = glm::vec2(200.0f, 200.0f);
-
 	SubTexture sprite = SubTexture::createFromIndexes(&mainTexture, glm::vec2(3, 0), glm::vec2(64, 64));
 
-	Player player(sprite, position, size, rotate, color, velocity);
-	Game game(&player, renderer, background, camera);
+	Player player = generatePlayer(sprite);
 
 	Texture asteroidTex("res/textures/graphics/GAster64.bmp", GL_RGB);
 	SubTexture astSprite = SubTexture::createFromIndexes(&asteroidTex, glm::vec2(7.f, 0.f), glm::vec2(64.f, 64.f));
 	GameObject ast(astSprite, glm::vec3(100, 100, 0), glm::vec2(100, 100));
 
+	TextRenderer textRenderer(&textShader, &fontTexture, glm::vec2(16.0f, 16.0f));
+	Game game(&player, renderer, textRenderer, background, camera);
 	game.objects.push_back(&ast);
 	//game.objects.push_back(player);
-
-	TextRenderer textRenderer(&textShader, &fontTexture, glm::vec2(16.0f, 16.0f));
-
 
 	game.Init();
 
@@ -149,8 +138,7 @@ int main(int argc, char** argv)
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		shader.setMat4("view", camera.getView());
-
-		textRenderer.renderText("High Score", glm::vec2(0.0f, 0.0f), 2.0f, glm::vec3(1.f, 1.f, 1.f));
+		
 		
 		game.Draw(deltaTime);
 
@@ -173,34 +161,14 @@ SDL_Window* startOpenGLWindow() {
 	return window;
 }
 
-void captureMouse()
+Player& generatePlayer(SubTexture& subTex)
 {
-	SDL_ShowCursor(SDL_DISABLE);
-	SDL_CaptureMouse(SDL_TRUE);
-	SDL_SetRelativeMouseMode(SDL_TRUE);
-}
+	glm::vec3 position = glm::vec3(20.0f, 300.0f, 0.0f);
+	glm::vec2 size = glm::vec2(100.0f, 100.0f);
+	float rotate = 90.f;
+	glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
+	glm::vec2 velocity = glm::vec2(200.0f, 200.0f);
 
-void stopCapturingMouse()
-{
-	SDL_ShowCursor(SDL_ENABLE);
-	SDL_CaptureMouse(SDL_FALSE);
-	SDL_SetRelativeMouseMode(SDL_FALSE);
-}
-
-void processEscapePress()
-{
-	const Uint8* keyState = SDL_GetKeyboardState(NULL);
-	
-	if (keyState[SDL_SCANCODE_ESCAPE]) { stopCapturingMouse(); }
-}
-
-void processDrawModeChange() {
-	const Uint8* keyState = SDL_GetKeyboardState(NULL);
-
-	if(keyState[SDL_SCANCODE_1])
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	if(keyState[SDL_SCANCODE_2])
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	if (keyState[SDL_SCANCODE_3])
-		glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+	Player player(subTex, position, size, rotate, color, velocity);
+	return player;
 }
