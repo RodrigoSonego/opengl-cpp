@@ -12,8 +12,6 @@ TextRenderer::TextRenderer(Shader* shader, Texture* texture, glm::vec2 glyphSize
     mapFont();
 
     setupRenderer();
-
-    std::cout << "text vbo: " << VBO << std::endl;
 }
 
 

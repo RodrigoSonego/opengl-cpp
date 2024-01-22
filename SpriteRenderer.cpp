@@ -7,9 +7,6 @@ SpriteRenderer::SpriteRenderer(Shader spriteShader, Camera camera)
 {
 	this->spriteShader = spriteShader;
 	setupRendering();
-
-    std::cout << "sprite vbo: " << VBO << std::endl;
-    std::cout << "sprite ebo: " << EBO << std::endl;
 }
 
 void SpriteRenderer::RenderSprite(Texture* tex, glm::vec3 position, glm::vec2 size, float rotation, glm::vec2 spriteIndex, glm::vec3 color)
