@@ -9,6 +9,8 @@ TextRenderer::TextRenderer(Shader* shader, Texture* texture, glm::vec2 glyphSize
     colCount = texture->width / glyphSize.x;
     rowCount = texture->height / glyphSize.y;
 
+    mapFont();
+
     setupRenderer();
 
     std::cout << "text vbo: " << VBO << std::endl;
@@ -25,10 +27,8 @@ void TextRenderer::renderText(std::string text, glm::vec2 position, float scale,
 
     std::string::const_iterator c;
     for (c = text.begin(); c != text.end(); ++c) {
-        glyphX = (int)*c % colCount;
-        glyphY = round( (float)*c / rowCount );
 
-        subtex.updateSpritePosition(glm::vec2(glyphX, glyphY));
+        subtex.updateSpritePosition(glyphCoords[(char)*c]);
 
         float letterX = m_GlyphSize.x * (float)charCount * scale;
         
@@ -36,9 +36,6 @@ void TextRenderer::renderText(std::string text, glm::vec2 position, float scale,
         glm::vec2 pos = position +glm::vec2(letterX, 0.0f);
         model = glm::translate(model, glm::vec3(pos, 0.0f));
         model = glm::scale(model, glm::vec3(m_GlyphSize.x * scale, m_GlyphSize.y * scale, 1.0));
-
-        std::cout << *c << ": x= " << subtex.getSpritePosition().x << " y= " << subtex.getSpritePosition().y << std::endl;
-
 
         textShader->setMat4("model", model);
         textShader->setVec3f("spriteColor", color);
@@ -97,4 +94,21 @@ void TextRenderer::setupRenderer()
 
     glm::mat4 projection = glm::ortho(0.0f, 800.0f, 600.0f, 0.0f);
     textShader->setMat4("projection", projection);
+}
+
+void TextRenderer::mapFont()
+{
+    int currentRow = 0, currentCol = 0;
+
+    for (int i = FIRST_CHAR; i <= LAST_CHAR; ++i)
+    {
+        glyphCoords.emplace(i, glm::vec2(currentCol, currentRow));
+
+        ++currentCol;
+
+        if (currentCol > colCount - 1) {
+            currentCol = 0;
+            ++currentRow;
+        }
+    }
 }

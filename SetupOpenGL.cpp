@@ -150,7 +150,7 @@ int main(int argc, char** argv)
 
 		shader.setMat4("view", camera.getView());
 
-		textRenderer.renderText("teste", glm::vec2(0.0f, 0.0f), 2.0f, glm::vec3(1.f, 1.f, 1.f));
+		textRenderer.renderText("High Score", glm::vec2(0.0f, 0.0f), 2.0f, glm::vec3(1.f, 1.f, 1.f));
 		
 		game.Draw(deltaTime);
 
