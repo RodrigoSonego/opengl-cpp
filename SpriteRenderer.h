@@ -8,7 +8,7 @@
 class SpriteRenderer
 {
 public:
-	SpriteRenderer(Shader spriteShader, Camera camera);
+	SpriteRenderer(Shader spriteShader);
 
 	void RenderSprite(Texture* tex, glm::vec3 position, glm::vec2 size, float rotation, glm::vec2 spriteIndex = { 0, 0 }, glm::vec3 color = {1.f,1.f,1.f});
 	void RenderSprite(Texture* tex, glm::vec3 position, glm::vec2 size, float rotation, glm::vec2 texCoords[4], glm::vec3 color = { 1.f,1.f,1.f });
@@ -22,7 +22,6 @@ private:
 	void setupRendering();
 	void updateTextureCoordinates(glm::vec2* newTexCoords);
 
-	Camera m_Camera;
 	Shader spriteShader;
 	GLuint quadVAO, VBO, EBO;
 };

@@ -2,8 +2,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 
-SpriteRenderer::SpriteRenderer(Shader spriteShader, Camera camera)
-    : m_Camera(camera)
+SpriteRenderer::SpriteRenderer(Shader spriteShader)
 {
 	this->spriteShader = spriteShader;
 	setupRendering();
