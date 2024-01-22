@@ -92,7 +92,7 @@ int main(int argc, char** argv)
 
 	float ratio = SCREEN_WIDTH / SCREEN_HEIGHT;
 
-	SpriteRenderer renderer(shader, camera);
+	SpriteRenderer renderer(shader);
 
 #pragma endregion
 
