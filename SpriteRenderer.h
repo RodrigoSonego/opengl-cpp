@@ -15,8 +15,6 @@ public:
 	void RenderSprite(SubTexture subTex, glm::vec3 position, glm::vec2 size, float rotation, glm::vec3 color = { 1.f,1.f,1.f });
 	void RenderSprite(SubTexture subTex, glm::mat4 modelMatrix, glm::vec3 color);
 
-	void RenderRelativeToView(SubTexture tex, glm::vec2 relativePosition, glm::vec2 size, float rotation, glm::vec3 color = { 1.f,1.f,1.f });
-
 
 private:
 	void setupRendering();
