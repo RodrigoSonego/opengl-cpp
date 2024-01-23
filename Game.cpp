@@ -12,6 +12,9 @@ Game::Game(Player* player, SpriteRenderer renderer, TextRenderer textRenderer, T
 void Game::Init()
 {
 	//objects[0]->parent = &scrollPivot;
+	for (GameObject* obj : objects) {
+		obj->parent = &scrollPivot;
+	}
 }
 
 void Game::ProcessInput(float deltaTime, SDL_Event ev)
@@ -46,7 +49,7 @@ void Game::ProcessInput(float deltaTime, SDL_Event ev)
 void Game::Update(float deltaTime)
 {
 	m_Player->UpdateModelMatrix();
-	//scrollPivot.position.x -= 30 * deltaTime;
+	scrollPivot.position.x -= 50 * deltaTime;
 
 	for (GameObject* obj : objects)
 	{

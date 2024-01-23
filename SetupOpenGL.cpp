@@ -1,11 +1,9 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <SDL.h>
-#include "dependencies/stb_image/stb_image.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 #include "BufferObject.h"
 #include "Camera.h"
@@ -20,6 +18,9 @@
 #include "Game.h"
 #include "TextRenderer.h"
 
+#include <cstdlib>
+#include <ctime>
+
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 
@@ -29,6 +30,7 @@
 /// <returns></returns>
 SDL_Window* startOpenGLWindow();
 Player& generatePlayer(SubTexture& subTex);
+glm::vec2 getRandomPos();
 
 int main(int argc, char** argv)
 {
@@ -54,27 +56,52 @@ int main(int argc, char** argv)
 
 #pragma endregion
 
-	Shader shader("vertex.vert", "fragment.frag");
+	Shader spriteShader("vertex.vert", "fragment.frag");
 	Shader textShader("textVert.vert", "fragment.frag");
 
 #pragma region Texture
 	// Create and bind texture afterwards
-	Texture mainTexture("res/textures/graphics/Ship1.bmp", GL_RGB);
+	Texture shipTexture("res/textures/graphics/Ship1.bmp", GL_RGB);
 	Texture background("res/textures/graphics/galaxy2.bmp", GL_RGB);
 	Texture fontTexture("res/textures/graphics/font16x16.bmp", GL_RGB);
+	Texture sAsteroidTex("res/textures/graphics/SAster64.bmp", GL_RGB);
+	Texture mAsteroidTex("res/textures/graphics/MAster64.bmp", GL_RGB);
+	Texture lonerTex("res/textures/graphics/LonerA.bmp", GL_RGB);
+	Texture rusherTex("res/textures/graphics/rusher.bmp", GL_RGB);
+	Texture droneTex("res/textures/graphics/drone.bmp", GL_RGB);
+	Texture shieldTex("res/textures/graphics/PUShield.bmp", GL_RGB);
+	Texture weaponTex("res/textures/graphics/PUWeapon.bmp", GL_RGB);
 
-	shader.use();
+	std::vector<GameObject*> gameObjects;
 
-	shader.setTextureIndex("image", 0);
-	mainTexture.bindTexture(0);
+	spriteShader.use();
+	spriteShader.setTextureIndex("image", 0);
 
 #pragma endregion
-	
 
+#pragma region ObjectsSubTextures
+	SubTexture sAstSprite = SubTexture::createFromIndexes(&sAsteroidTex, glm::vec2(0.f), glm::vec2(64.f));
+	SubTexture mAstSprite = SubTexture::createFromIndexes(&mAsteroidTex, glm::vec2(0.f), glm::vec2(64.f));
+	SubTexture lonerSprite = SubTexture::createFromIndexes(&lonerTex, glm::vec2(0.f), glm::vec2(64.f));
+	SubTexture rusherSprite = SubTexture::createFromIndexes(&rusherTex, glm::vec2(0.f), glm::vec2(64.f, 32.f));
+	SubTexture droneSprite = SubTexture::createFromIndexes(&droneTex, glm::vec2(0.f), glm::vec2(32.f));
+	SubTexture shieldSprite = SubTexture::createFromIndexes(&shieldTex, glm::vec2(0.f), glm::vec2(32.f));
+	SubTexture weaponSprite = SubTexture::createFromIndexes(&weaponTex, glm::vec2(0.f), glm::vec2(32.f));
 
-	glm::mat4 transMat(1.0f);
+#pragma endregion
 
-	shader.setMat4("transform", transMat);
+	srand(static_cast <unsigned> (time(0)));
+
+	GameObject sAsteroidObj(sAstSprite, glm::vec3(getRandomPos(), 0), glm::vec2(80));
+	GameObject sAsteroid1Obj(sAstSprite, glm::vec3(getRandomPos(), 0), glm::vec2(80));
+	GameObject sAsteroid2Obj(sAstSprite, glm::vec3(getRandomPos(), 0), glm::vec2(80));
+	GameObject mAsteroidObj(mAstSprite, glm::vec3(getRandomPos(), 0), glm::vec2(80));
+	GameObject mAsteroid1Obj(mAstSprite, glm::vec3(getRandomPos(), 0), glm::vec2(80));
+	GameObject lonerObj(lonerSprite, glm::vec3(getRandomPos(), 0), glm::vec2(80));
+	GameObject rusherObj(rusherSprite, glm::vec3(getRandomPos(), 0), glm::vec2(80.0f, 40.0f));
+	GameObject droneObj(droneSprite, glm::vec3(getRandomPos(), 0), glm::vec2(80.0f));
+	GameObject shieldObj(shieldSprite, glm::vec3(getRandomPos(), 0), glm::vec2(60.0f));
+	GameObject weaponObj(weaponSprite, glm::vec3(getRandomPos(), 0), glm::vec2(60.0f));
 
 #pragma region Camera
 	// // // // CAMERA STUFF // // // //
@@ -85,11 +112,11 @@ int main(int argc, char** argv)
 
 	glm::mat4 projection = glm::ortho(0.0f, 800.f, 600.f, 0.0f);
 
-	shader.setMat4("projection", projection);
+	spriteShader.setMat4("projection", projection);
 
 	float ratio = SCREEN_WIDTH / SCREEN_HEIGHT;
 
-	SpriteRenderer renderer(shader);
+	SpriteRenderer renderer(spriteShader);
 
 #pragma endregion
 
@@ -103,18 +130,27 @@ int main(int argc, char** argv)
 	float deltaTime = 0.0f;	// Time between current frame and last frame
 	float lastFrameTime = SDL_GetTicks(); // Time of last frame
 
-	SubTexture sprite = SubTexture::createFromIndexes(&mainTexture, glm::vec2(3, 0), glm::vec2(64, 64));
+	SubTexture sprite = SubTexture::createFromIndexes(&shipTexture, glm::vec2(3, 0), glm::vec2(64, 64));
 
 	Player player = generatePlayer(sprite);
 
-	Texture asteroidTex("res/textures/graphics/GAster64.bmp", GL_RGB);
-	SubTexture astSprite = SubTexture::createFromIndexes(&asteroidTex, glm::vec2(7.f, 0.f), glm::vec2(64.f, 64.f));
-	GameObject ast(astSprite, glm::vec3(100, 100, 0), glm::vec2(100, 100));
+	
+	
 
 	TextRenderer textRenderer(&textShader, &fontTexture, glm::vec2(16.0f, 16.0f));
 	Game game(&player, renderer, textRenderer, background, camera);
-	game.objects.push_back(&ast);
-	//game.objects.push_back(player);
+	
+	game.objects.push_back(&mAsteroidObj);
+	game.objects.push_back(&mAsteroid1Obj);
+	game.objects.push_back(&sAsteroidObj);
+	game.objects.push_back(&sAsteroid1Obj);
+	game.objects.push_back(&sAsteroid2Obj);
+	game.objects.push_back(&lonerObj);
+	game.objects.push_back(&rusherObj);
+	game.objects.push_back(&droneObj);
+	game.objects.push_back(&shieldObj);
+	game.objects.push_back(&weaponObj);
+
 
 	game.Init();
 
@@ -137,7 +173,7 @@ int main(int argc, char** argv)
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		shader.setMat4("view", camera.getView());
+		spriteShader.setMat4("view", camera.getView());
 		
 		
 		game.Draw(deltaTime);
@@ -171,4 +207,14 @@ Player& generatePlayer(SubTexture& subTex)
 
 	Player player(subTex, position, size, rotate, color, velocity);
 	return player;
+}
+
+glm::vec2 getRandomPos()
+{
+	float minX = 300, maxX = 1600;
+	float minY = 0, maxY = 500;
+
+	float randomX = minX + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (maxX - minX)));
+	float randomY = minY + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (maxY - minY)));
+	return glm::vec2(randomX, randomY);
 }

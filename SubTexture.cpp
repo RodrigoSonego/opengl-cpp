@@ -48,7 +48,7 @@ void SubTexture::updateSpritePosition(glm::vec2 position)
 void SubTexture::calculateCoords()
 {
     glm::vec2 minCoord = { (m_SpritePosition.x * m_Size.x) / texture->width, (m_SpritePosition.y * m_Size.y) / texture->height };
-    glm::vec2 maxCoord = { ((m_SpritePosition.x + 1) * m_Size.y) / texture->width, ((m_SpritePosition.y + 1) * m_Size.y) / texture->height };
+    glm::vec2 maxCoord = { ((m_SpritePosition.x + 1) * m_Size.x) / texture->width, ((m_SpritePosition.y + 1) * m_Size.y) / texture->height };
 
     texCoords[0] = { maxCoord.x, maxCoord.y };
     texCoords[1] = { maxCoord.x, minCoord.y };
