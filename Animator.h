@@ -17,6 +17,7 @@ public:
 private:
 	int currentFrame = 0;
 	float timeElapsed = 0.0f;
+	glm::vec2 m_FirstSprite;
 
 	std::string currentAnimName;
 };

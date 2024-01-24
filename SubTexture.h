@@ -14,6 +14,8 @@ public:
 	Texture* getTexture();
 	glm::vec2 getSize();
 	void updateSpritePosition(glm::vec2 position);
+	void switchToNextSprite(bool forward = true);
+	int getMaxNumberOfFrames();
 
 private:
 	Texture* texture;

@@ -10,9 +10,17 @@ void Animator::play(SubTexture* subTex, int numberOfFrames, float deltaTime,
 		return;
 	}
 
-	if (currentFrame >= numberOfFrames - 1) {
-		if (willLoop)
+	// Different anim name means it's entering the animator for the first time
+	if (currentAnimName != animName) {
+		currentFrame = 0;
+		m_FirstSprite = subTex->getSpritePosition();
+	}
+
+	if (currentFrame > numberOfFrames - 1) {
+		if (willLoop) {		
 			currentFrame = 0;
+			subTex->updateSpritePosition(m_FirstSprite);
+		}
 		else {
 			stopAllAnimations();
 			return;
@@ -33,8 +41,9 @@ void Animator::play(SubTexture* subTex, int numberOfFrames, float deltaTime,
 
 		float offset = playBackwards ? -1.0f : 1.0f;
 
-		glm::vec2 next = glm::vec2(subTex->getSpritePosition().x + offset, subTex->getSpritePosition().y);
-		subTex->updateSpritePosition(next);
+		glm::vec2 next = glm::vec2(m_FirstSprite.x + (currentFrame * offset), 
+			m_FirstSprite.y);
+		subTex->switchToNextSprite(playBackwards);
 
 		++currentFrame;
 	}

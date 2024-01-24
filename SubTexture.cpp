@@ -45,6 +45,29 @@ void SubTexture::updateSpritePosition(glm::vec2 position)
     calculateCoords();
 }
 
+void SubTexture::switchToNextSprite(bool forward)
+{
+    float nextX = m_SpritePosition.x + 1;
+
+    float maxX = (texture->width / m_Size.x) - 1;
+    float maxY = (texture->height / m_Size.y) - 1;
+
+    glm::vec2 newPosition(nextX, m_SpritePosition.y);
+
+    if (newPosition.x > maxX) { newPosition = glm::vec2(0, newPosition.y + 1); }
+    if (newPosition.y > maxY) { newPosition = glm::vec2(0, 0); }
+
+    m_SpritePosition = newPosition;
+    calculateCoords();
+}
+
+int SubTexture::getMaxNumberOfFrames()
+{
+    int cols = texture->width / m_Size.x;
+    int rows = texture->height / m_Size.y;
+    return cols * rows;
+}
+
 void SubTexture::calculateCoords()
 {
     glm::vec2 minCoord = { (m_SpritePosition.x * m_Size.x) / texture->width, (m_SpritePosition.y * m_Size.y) / texture->height };
