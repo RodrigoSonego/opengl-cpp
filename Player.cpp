@@ -31,10 +31,10 @@ void Player::setPlayerState(PlayerState state)
 		framesToAnim = Sprite->getSpritePosition().x - 3;
 	}
 	else if (state == PlayerState::MovingUp && m_State != PlayerState::MovingUp) {
-		framesToAnim = Sprite->getSpritePosition().x + 1;
+		framesToAnim = Sprite->getSpritePosition().x;
 	}
 	else if (state == PlayerState::MovingDown && m_State != PlayerState::MovingDown) {
-		framesToAnim = 7 - Sprite->getSpritePosition().x;
+		framesToAnim = 6 - Sprite->getSpritePosition().x;
 	}
 	
 	//std::cout << "spritePos: " << Sprite->getSpritePosition().x << " framesToAnim: " << abs(framesToAnim) << std::endl;

@@ -9,7 +9,7 @@ Projectile::Projectile(SubTexture& sprite, glm::vec3 position, glm::vec2 size, f
 	Reset();
 }
 
-void Projectile::Draw(SpriteRenderer& renderer, int numberOfFrames, float deltaTime, bool willLoop)
+void Projectile::DrawAnimating(SpriteRenderer& renderer, int numberOfFrames, float deltaTime, bool willLoop)
 {
 	if (m_State == Inactive) { return; }
 
@@ -21,11 +21,11 @@ void Projectile::Draw(SpriteRenderer& renderer, int numberOfFrames, float deltaT
 	m_elapsedTime += deltaTime;
 	if (m_elapsedTime >= m_duration) {
 		Explode();
-		GameObject::Draw(renderer, 10, deltaTime, false);
+		GameObject::DrawAnimating(renderer, 10, deltaTime, false);
 		return;
 	}
 	transform.position.x += Velocity.x * deltaTime;
-	GameObject::Draw(renderer, 2, deltaTime);
+	GameObject::DrawAnimating(renderer, 2, deltaTime);
 }
 
 void Projectile::Shoot(glm::vec2 startPosition, glm::vec2 offset)

@@ -41,8 +41,6 @@ void Animator::play(SubTexture* subTex, int numberOfFrames, float deltaTime,
 
 		float offset = playBackwards ? -1.0f : 1.0f;
 
-		glm::vec2 next = glm::vec2(m_FirstSprite.x + (currentFrame * offset), 
-			m_FirstSprite.y);
 		subTex->switchToNextSprite(playBackwards);
 
 		++currentFrame;

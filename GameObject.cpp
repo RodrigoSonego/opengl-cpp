@@ -17,18 +17,18 @@ void GameObject::Draw(SpriteRenderer& renderer)
 	renderer.RenderSprite(*Sprite, modelMatrix, Color);
 }
 
-void GameObject::Draw(SpriteRenderer& renderer, int numberOfFrames, float deltaTime, bool willLoop)
+void GameObject::DrawAnimating(SpriteRenderer& renderer, int numberOfFrames, float deltaTime, bool willLoop)
 {
 	animator.play(Sprite, numberOfFrames, deltaTime, willLoop);
 
 	Draw(renderer);
 }
 
-void GameObject::Draw(SpriteRenderer& renderer, float deltaTime, bool willLoop)
+void GameObject::DrawAnimating(SpriteRenderer& renderer, float deltaTime, bool willLoop)
 {
 	int totalFrames = Sprite->getMaxNumberOfFrames();
 
-	Draw(renderer, totalFrames, deltaTime, willLoop);
+	DrawAnimating(renderer, totalFrames, deltaTime, willLoop);
 }
 
 void GameObject::UpdateModelMatrix()

@@ -188,7 +188,7 @@ int main(int argc, char** argv)
 		
 		game.Draw(deltaTime);
 
-		sMissile.Draw(renderer, 1, deltaTime);
+		sMissile.DrawAnimating(renderer, 1, deltaTime);
 		SDL_GL_SwapWindow(window);
 
 	}

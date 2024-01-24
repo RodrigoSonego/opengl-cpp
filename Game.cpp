@@ -13,11 +13,9 @@ Game::Game(Player* player, SpriteRenderer renderer, TextRenderer textRenderer, T
 void Game::Init()
 {
 	//objects[0]->parent = &scrollPivot;
-	/*for (GameObject* obj : objects) {
+	for (GameObject* obj : objects) {
 		obj->parent = &scrollPivot;
-	}*/
-
-	
+	}
 }
 
 void Game::ProcessInput(float deltaTime, SDL_Event ev)
@@ -67,14 +65,14 @@ void Game::Draw(float deltaTime)
 {
 	DrawText();
 
-	//m_Player->DrawPlayer(m_Renderer, deltaTime);
+	m_Player->DrawPlayer(m_Renderer, deltaTime);
 
 	for (GameObject* obj : objects)
 	{
 		obj->DrawAnimating(m_Renderer, deltaTime);
 	}
 
-	//m_Renderer.RenderSprite(&m_Background, glm::vec3(0.0f, 0.0f, -0.2f), glm::vec2(800.0f, 600.f), 0.0f);
+	m_Renderer.RenderSprite(&m_Background, glm::vec3(0.0f, 0.0f, -0.2f), glm::vec2(800.0f, 600.f), 0.0f);
 	
 }
 
