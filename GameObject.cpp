@@ -12,14 +12,23 @@ GameObject::GameObject(SubTexture& tex, glm::vec3 position, glm::vec2 size, floa
 
 void GameObject::Draw(SpriteRenderer& renderer)
 {
+	if (m_WillDraw == false) { return; }
+
 	renderer.RenderSprite(*Sprite, modelMatrix, Color);
 }
 
-void GameObject::Draw(SpriteRenderer& renderer, int numberOfFrames, float deltaTime)
+void GameObject::Draw(SpriteRenderer& renderer, int numberOfFrames, float deltaTime, bool willLoop)
 {
-	animator.play(Sprite, numberOfFrames, deltaTime, true);
+	animator.play(Sprite, numberOfFrames, deltaTime, willLoop);
 
 	Draw(renderer);
+}
+
+void GameObject::Draw(SpriteRenderer& renderer, float deltaTime, bool willLoop)
+{
+	int totalFrames = Sprite->getMaxNumberOfFrames();
+
+	Draw(renderer, totalFrames, deltaTime, willLoop);
 }
 
 void GameObject::UpdateModelMatrix()
@@ -42,6 +51,11 @@ void GameObject::UpdateModelMatrix()
 	}
 
 	modelMatrix = model;
+}
+
+void GameObject::setWillDraw(bool willDraw)
+{
+	m_WillDraw = willDraw;
 }
 
 void GameObject::printModelMatrix()

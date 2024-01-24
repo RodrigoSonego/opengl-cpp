@@ -22,9 +22,11 @@ public:
 	explicit GameObject(SubTexture& sprite, glm::vec3 position, glm::vec2 size, float rotation = 0.f, glm::vec3 color = {1.f, 1.f, 1.f}, glm::vec2 velocity = { 0.0f, 0.0f } );
 
 	virtual void Draw(SpriteRenderer& renderer);
-	virtual void Draw(SpriteRenderer& renderer, int numberOfFrames, float deltaTime);
+	virtual void DrawAnimating(SpriteRenderer& renderer, int numberOfFrames, float deltaTime, bool willLoop = true);
+	virtual void DrawAnimating(SpriteRenderer& renderer, float deltaTime, bool willLoop = true);
 	virtual void UpdateModelMatrix();
 
+	void setWillDraw(bool willDraw);
 	void printModelMatrix();
 
 protected:
@@ -32,6 +34,7 @@ protected:
 
 private:
 	glm::mat4 modelMatrix;
-
+	
+	bool m_WillDraw = true;
 };
 
