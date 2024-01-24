@@ -16,6 +16,7 @@
 #include "SpriteRenderer.h"
 #include "GameObject.h"
 #include "Game.h"
+#include "Projectile.h"
 #include "TextRenderer.h"
 
 #include <cstdlib>
@@ -71,6 +72,8 @@ int main(int argc, char** argv)
 	Texture droneTex("res/textures/graphics/drone.bmp", GL_RGB);
 	Texture shieldTex("res/textures/graphics/PUShield.bmp", GL_RGB);
 	Texture weaponTex("res/textures/graphics/PUWeapon.bmp", GL_RGB);
+	Texture missileTex("res/textures/graphics/missile.bmp", GL_RGB);
+	Texture explosionTex("res/textures/graphics/explode16.bmp", GL_RGB);
 
 	std::vector<GameObject*> gameObjects;
 
@@ -87,6 +90,8 @@ int main(int argc, char** argv)
 	SubTexture droneSprite = SubTexture::createFromIndexes(&droneTex, glm::vec2(0.f), glm::vec2(32.f));
 	SubTexture shieldSprite = SubTexture::createFromIndexes(&shieldTex, glm::vec2(0.f), glm::vec2(32.f));
 	SubTexture weaponSprite = SubTexture::createFromIndexes(&weaponTex, glm::vec2(0.f), glm::vec2(32.f));
+	SubTexture sMissileSprite = SubTexture::createFromIndexes(&missileTex, glm::vec2(0.f, 0.f), glm::vec2(16.f));
+	SubTexture explosionSprite = SubTexture::createFromIndexes(&explosionTex, glm::vec2(0.f), glm::vec2(16.f));
 
 #pragma endregion
 
@@ -102,6 +107,10 @@ int main(int argc, char** argv)
 	GameObject droneObj(droneSprite, glm::vec3(getRandomPos(), 0), glm::vec2(80.0f));
 	GameObject shieldObj(shieldSprite, glm::vec3(getRandomPos(), 0), glm::vec2(60.0f));
 	GameObject weaponObj(weaponSprite, glm::vec3(getRandomPos(), 0), glm::vec2(60.0f));
+
+	Projectile sMissile(sMissileSprite, glm::vec3(getRandomPos(), 0), glm::vec2(30.0f), 2.f, explosionSprite,
+		90.f, glm::vec3(1.f), glm::vec2(30.f, 0.f));
+
 
 #pragma region Camera
 	// // // // CAMERA STUFF // // // //
@@ -150,10 +159,11 @@ int main(int argc, char** argv)
 	game.objects.push_back(&droneObj);
 	game.objects.push_back(&shieldObj);
 	game.objects.push_back(&weaponObj);
-
+	game.objects.push_back(&sMissile);
 
 	game.Init();
 
+	sMissile.Shoot(player.transform.position, glm::vec2(player.transform.size.x, player.transform.size.y / 2));
 	SDL_Event windowEvent;
 	while (true)
 	{
@@ -178,6 +188,7 @@ int main(int argc, char** argv)
 		
 		game.Draw(deltaTime);
 
+		sMissile.Draw(renderer, 1, deltaTime);
 		SDL_GL_SwapWindow(window);
 
 	}
