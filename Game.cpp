@@ -2,6 +2,7 @@
 #include "Texture.h"
 #include <SDL.h>
 #include <iostream>
+#include <algorithm>
 
 Game::Game(Player* player, SpriteRenderer renderer, TextRenderer textRenderer, Texture background, Camera camera)
 	: m_Player(player), m_Renderer(renderer), m_textRenderer(textRenderer), m_Background(background), m_Camera(camera)
@@ -21,6 +22,7 @@ void Game::ProcessInput(float deltaTime, SDL_Event ev)
 {
 	const Uint8* keyState = SDL_GetKeyboardState(NULL);
 
+
 	if (keyState[SDL_SCANCODE_W]) {
 		m_Player->transform.position.y -= m_Player->Velocity.y * deltaTime;
 		m_Player->setPlayerState(Player::MovingUp);
@@ -33,16 +35,18 @@ void Game::ProcessInput(float deltaTime, SDL_Event ev)
 		m_Player->setPlayerState(Player::Idle);
 	}
 
+	if (keyState[SDL_SCANCODE_D]) {
+		m_Player->transform.position.x += m_Player->Velocity.x * deltaTime;
+	}
+	else if (keyState[SDL_SCANCODE_A]) {
+		m_Player->transform.position.x -= m_Player->Velocity.x * deltaTime;
+	}
+
 	float maxY = 600 - m_Player->transform.size.y;
-	
-	if (m_Player->transform.position.y > maxY) {
-		m_Player->transform.position.y = maxY;
-		return;
-	}
-	
-	if (m_Player->transform.position.y < 0) {
-		m_Player->transform.position.y = 0;
-	}
+	float maxX = 800 - m_Player->transform.size.x;
+
+	m_Player->transform.position.y = glm::clamp(m_Player->transform.position.y, 0.0f, maxY);
+	m_Player->transform.position.x = glm::clamp(m_Player->transform.position.x, 0.0f, maxX);
 
 }
 
