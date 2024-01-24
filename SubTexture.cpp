@@ -45,9 +45,10 @@ void SubTexture::updateSpritePosition(glm::vec2 position)
     calculateCoords();
 }
 
-void SubTexture::switchToNextSprite(bool forward)
+void SubTexture::switchToNextSprite(bool isBackwards)
 {
-    float nextX = m_SpritePosition.x + 1;
+    int offset = isBackwards ? -1 : 1;
+    float nextX = m_SpritePosition.x + offset;
 
     float maxX = (texture->width / m_Size.x) - 1;
     float maxY = (texture->height / m_Size.y) - 1;
@@ -56,6 +57,8 @@ void SubTexture::switchToNextSprite(bool forward)
 
     if (newPosition.x > maxX) { newPosition = glm::vec2(0, newPosition.y + 1); }
     if (newPosition.y > maxY) { newPosition = glm::vec2(0, 0); }
+    if (newPosition.x < 0) { newPosition = glm::vec2(maxX, newPosition.y - 1); }
+    if (newPosition.y < 0) { newPosition = glm::vec2(maxX, maxY); }
 
     m_SpritePosition = newPosition;
     calculateCoords();
