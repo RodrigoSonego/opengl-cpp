@@ -97,6 +97,8 @@ int main(int argc, char** argv)
 
 	srand(static_cast <unsigned> (time(0)));
 
+#pragma region GameObject creation
+
 	GameObject sAsteroidObj(sAstSprite, glm::vec3(getRandomPos(), 0), glm::vec2(80));
 	GameObject sAsteroid1Obj(sAstSprite, glm::vec3(getRandomPos(), 0), glm::vec2(80));
 	GameObject sAsteroid2Obj(sAstSprite, glm::vec3(getRandomPos(), 0), glm::vec2(80));
@@ -108,9 +110,11 @@ int main(int argc, char** argv)
 	GameObject shieldObj(shieldSprite, glm::vec3(getRandomPos(), 0), glm::vec2(60.0f));
 	GameObject weaponObj(weaponSprite, glm::vec3(getRandomPos(), 0), glm::vec2(60.0f));
 
-	Projectile sMissile(sMissileSprite, glm::vec3(getRandomPos(), 0), glm::vec2(40.0f), 1.5f, explosionSprite,
+	Projectile sMissile(sMissileSprite, glm::vec3(getRandomPos(), 0.3f), glm::vec2(40.0f), 1.5f, explosionSprite,
 		90.f, glm::vec3(1.f), glm::vec2(250.f, 0.f));
 
+
+#pragma endregion
 
 #pragma region Camera
 	// // // // CAMERA STUFF // // // //

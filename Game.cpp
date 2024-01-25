@@ -12,7 +12,6 @@ Game::Game(Player* player, SpriteRenderer renderer, TextRenderer textRenderer, T
 
 void Game::Init()
 {
-	//objects[0]->parent = &scrollPivot;
 	for (GameObject* obj : objects) {
 		if (Projectile* proj = dynamic_cast<Projectile*>(obj)) {
 			continue;

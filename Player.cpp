@@ -6,15 +6,15 @@ void Player::DrawPlayer(SpriteRenderer& renderer, float deltaTime)
 	switch (m_State)
 	{
 	case Player::MovingUp:
-		animator.play(Sprite, framesToAnim, deltaTime, false, true, "up");
+		animator.play(Sprite, m_FramesToAnim, deltaTime, false, true, "up");
 		break;
 	case Player::MovingDown:
-		animator.play(Sprite, framesToAnim, deltaTime, false, false, "down");
+		animator.play(Sprite, m_FramesToAnim, deltaTime, false, false, "down");
 		break;
 	case Player::Idle:
-		bool isBackwards = framesToAnim > 0;
+		bool isBackwards = m_FramesToAnim > 0;
 
-		animator.play(Sprite, abs(framesToAnim), deltaTime, false, isBackwards, "idle");
+		animator.play(Sprite, abs(m_FramesToAnim), deltaTime, false, isBackwards, "idle");
 		break;
 	}
 
@@ -23,21 +23,20 @@ void Player::DrawPlayer(SpriteRenderer& renderer, float deltaTime)
 
 void Player::SetPlayerState(PlayerState state)
 {
-	// Get the frame coount to be used on an animation
+	// Get the frame count to be used on an animation
 	// This is sorta harcoded for this specific project, and could count as a gambiarra
 	// Only gets the frame count when the state is different than the current one
 	// Had to do this way since it is called every frame
 	if (state == PlayerState::Idle && m_State != PlayerState::Idle) {
-		framesToAnim = Sprite->getSpritePosition().x - 3;
+		m_FramesToAnim = Sprite->getSpritePosition().x - 3;
 	}
 	else if (state == PlayerState::MovingUp && m_State != PlayerState::MovingUp) {
-		framesToAnim = Sprite->getSpritePosition().x;
+		m_FramesToAnim = Sprite->getSpritePosition().x;
 	}
 	else if (state == PlayerState::MovingDown && m_State != PlayerState::MovingDown) {
-		framesToAnim = 6 - Sprite->getSpritePosition().x;
+		m_FramesToAnim = 6 - Sprite->getSpritePosition().x;
 	}
 	
-	//std::cout << "spritePos: " << Sprite->getSpritePosition().x << " framesToAnim: " << abs(framesToAnim) << std::endl;
 	m_State = state;
 }
 

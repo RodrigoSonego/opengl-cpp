@@ -9,7 +9,7 @@ public:
 
 	void play(SubTexture* subTex, int numberOfFrames, float deltaTime,
 			bool willLoop, bool playBackwards = false, std::string animName = "idle");
-	void stopAllAnimations();
+	void stopAnimating();
 	
 	bool isFinished = false;
 	int getCurrentFrame();

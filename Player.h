@@ -10,8 +10,6 @@ public:
 		Idle,
 		MovingUp,
 		MovingDown,
-		UpToIdle,
-		DownToIdle
 	};
 
 	using GameObject::GameObject;
@@ -23,7 +21,7 @@ public:
 private:
 	PlayerState m_State = PlayerState::Idle;
 
-	int framesToAnim = 0;
+	int m_FramesToAnim = 0;
 	Projectile* m_Missile;
 };
 

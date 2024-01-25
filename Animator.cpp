@@ -1,5 +1,6 @@
 #include "Animator.h"
 #include <iostream>
+
 void Animator::play(SubTexture* subTex, int numberOfFrames, float deltaTime, 
 	bool willLoop, bool playBackwards, std::string animName)
 {
@@ -22,24 +23,18 @@ void Animator::play(SubTexture* subTex, int numberOfFrames, float deltaTime,
 			subTex->updateSpritePosition(m_FirstSprite);
 		}
 		else {
-			stopAllAnimations();
+			stopAnimating();
 			return;
 		}
 	}
-
 	currentAnimName = animName;
 	isFinished = false;
 	
-
 	float delayBtweenFrames = 0.13f;
-
-	Texture* tex = subTex->getTexture();
 
 	timeElapsed += deltaTime;
 	if (timeElapsed >= delayBtweenFrames) {
 		timeElapsed = 0;
-
-		float offset = playBackwards ? -1.0f : 1.0f;
 
 		subTex->switchToNextSprite(playBackwards);
 
@@ -47,7 +42,7 @@ void Animator::play(SubTexture* subTex, int numberOfFrames, float deltaTime,
 	}
 }
 
-void Animator::stopAllAnimations()
+void Animator::stopAnimating()
 {
 	currentFrame = 0;
 	timeElapsed = 0.0f;
