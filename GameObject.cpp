@@ -57,15 +57,3 @@ void GameObject::setWillDraw(bool willDraw)
 {
 	m_WillDraw = willDraw;
 }
-
-void GameObject::printModelMatrix()
-{
-	std::cout << "Model Matrix:" << std::endl;
-	for (int i = 0; i < 4; ++i) {
-		for (int j = 0; j < 4; ++j) {
-			std::cout << modelMatrix[i][j] << " ";
-		}
-		std::cout << std::endl;
-	}
-}
-

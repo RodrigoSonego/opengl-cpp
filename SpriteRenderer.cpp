@@ -113,11 +113,3 @@ void SpriteRenderer::setupRendering()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 }
-
-void SpriteRenderer::updateTextureCoordinates(glm::vec2* newTexCoords)
-{
-    glBindVertexArray(this->quadVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferSubData(GL_ARRAY_BUFFER, 2 * sizeof(float), 2 * sizeof(float), newTexCoords);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-}

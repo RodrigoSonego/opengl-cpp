@@ -14,7 +14,7 @@ Game::Game(Player* player, SpriteRenderer renderer, TextRenderer textRenderer, T
 
 void Game::Init()
 {
-	for (GameObject* obj : objects) {
+	for (GameObject* obj : Objects) {
 		if (Projectile* proj = dynamic_cast<Projectile*>(obj)) {
 			continue;
 		}
@@ -69,7 +69,7 @@ void Game::Update(float deltaTime)
 	m_ScrollPivot.position.x -= SCROLL_SPEED * deltaTime;
 	m_ParalaxPivot.position.x -= PARALAX_SPEED * deltaTime;
 
-	for (GameObject* obj : objects)
+	for (GameObject* obj : Objects)
 	{
 		obj->UpdateModelMatrix();
 	}
@@ -91,7 +91,7 @@ void Game::Draw(float deltaTime)
 
 	m_Player->DrawPlayer(m_Renderer, deltaTime);
 
-	for (GameObject* obj : objects)
+	for (GameObject* obj : Objects)
 	{
 		obj->DrawAnimating(m_Renderer, deltaTime);
 	}

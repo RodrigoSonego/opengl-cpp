@@ -21,7 +21,7 @@ public:
 	virtual void Update(float deltaTime);
 	virtual void Draw(float deltaTime);
 
-	std::vector<GameObject*> objects;
+	std::vector<GameObject*> Objects;
 
 	std::vector<GameObject*> ParalaxObjects;
 private:

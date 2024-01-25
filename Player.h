@@ -13,8 +13,18 @@ public:
 	};
 
 	using GameObject::GameObject;
+	/// <summary>
+	/// Draws Player based on its state
+	/// </summary>
+	/// <param name="renderer"></param>
+	/// <param name="deltaTime"></param>
 	void DrawPlayer(SpriteRenderer& renderer, float deltaTime);
+	/// <summary>
+	/// Sets Player state and defines number of frames to be animated
+	/// </summary>
+	/// <param name="state"></param>
 	void SetPlayerState(PlayerState state);
+
 	void shootMissile();
 	void setMissile(Projectile* missile);
 

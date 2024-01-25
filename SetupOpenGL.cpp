@@ -155,17 +155,17 @@ int main(int argc, char** argv)
 	TextRenderer textRenderer(&textShader, &fontTexture, glm::vec2(16.0f, 16.0f));
 	Game game(&player, renderer, textRenderer, background, camera);
 	
-	game.objects.push_back(&mAsteroidObj);
-	game.objects.push_back(&mAsteroid1Obj);
-	game.objects.push_back(&sAsteroidObj);
-	game.objects.push_back(&sAsteroid1Obj);
-	game.objects.push_back(&sAsteroid2Obj);
-	game.objects.push_back(&lonerObj);
-	game.objects.push_back(&rusherObj);
-	game.objects.push_back(&droneObj);
-	game.objects.push_back(&shieldObj);
-	game.objects.push_back(&weaponObj);
-	game.objects.push_back(&sMissile);
+	game.Objects.push_back(&mAsteroidObj);
+	game.Objects.push_back(&mAsteroid1Obj);
+	game.Objects.push_back(&sAsteroidObj);
+	game.Objects.push_back(&sAsteroid1Obj);
+	game.Objects.push_back(&sAsteroid2Obj);
+	game.Objects.push_back(&lonerObj);
+	game.Objects.push_back(&rusherObj);
+	game.Objects.push_back(&droneObj);
+	game.Objects.push_back(&shieldObj);
+	game.Objects.push_back(&weaponObj);
+	game.Objects.push_back(&sMissile);
 
 	game.ParalaxObjects.push_back(&paralaxWall1);
 	game.ParalaxObjects.push_back(&paralaxWall2);
