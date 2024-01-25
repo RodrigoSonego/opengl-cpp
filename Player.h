@@ -1,5 +1,6 @@
 #pragma once
 #include "GameObject.h"
+#include "Projectile.h"
 
 class Player : public GameObject
 {
@@ -15,11 +16,14 @@ public:
 
 	using GameObject::GameObject;
 	void DrawPlayer(SpriteRenderer& renderer, float deltaTime);
-	void setPlayerState(PlayerState state);
+	void SetPlayerState(PlayerState state);
+	void shootMissile();
+	void setMissile(Projectile* missile);
 
 private:
 	PlayerState m_State = PlayerState::Idle;
 
 	int framesToAnim = 0;
+	Projectile* m_Missile;
 };
 

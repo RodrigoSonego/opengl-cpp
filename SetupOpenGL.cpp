@@ -90,7 +90,7 @@ int main(int argc, char** argv)
 	SubTexture droneSprite = SubTexture::createFromIndexes(&droneTex, glm::vec2(0.f), glm::vec2(32.f));
 	SubTexture shieldSprite = SubTexture::createFromIndexes(&shieldTex, glm::vec2(0.f), glm::vec2(32.f));
 	SubTexture weaponSprite = SubTexture::createFromIndexes(&weaponTex, glm::vec2(0.f), glm::vec2(32.f));
-	SubTexture sMissileSprite = SubTexture::createFromIndexes(&missileTex, glm::vec2(0.f, 0.f), glm::vec2(16.f));
+	SubTexture sMissileSprite = SubTexture::createFromIndexes(&missileTex, glm::vec2(0.f), glm::vec2(16.f));
 	SubTexture explosionSprite = SubTexture::createFromIndexes(&explosionTex, glm::vec2(0.f), glm::vec2(16.f));
 
 #pragma endregion
@@ -108,8 +108,8 @@ int main(int argc, char** argv)
 	GameObject shieldObj(shieldSprite, glm::vec3(getRandomPos(), 0), glm::vec2(60.0f));
 	GameObject weaponObj(weaponSprite, glm::vec3(getRandomPos(), 0), glm::vec2(60.0f));
 
-	Projectile sMissile(sMissileSprite, glm::vec3(getRandomPos(), 0), glm::vec2(30.0f), 2.f, explosionSprite,
-		90.f, glm::vec3(1.f), glm::vec2(30.f, 0.f));
+	Projectile sMissile(sMissileSprite, glm::vec3(getRandomPos(), 0), glm::vec2(40.0f), 1.5f, explosionSprite,
+		90.f, glm::vec3(1.f), glm::vec2(250.f, 0.f));
 
 
 #pragma region Camera
@@ -142,9 +142,8 @@ int main(int argc, char** argv)
 	SubTexture sprite = SubTexture::createFromIndexes(&shipTexture, glm::vec2(3, 0), glm::vec2(64, 64));
 
 	Player player = generatePlayer(sprite);
-
 	
-	
+	player.setMissile(&sMissile);
 
 	TextRenderer textRenderer(&textShader, &fontTexture, glm::vec2(16.0f, 16.0f));
 	Game game(&player, renderer, textRenderer, background, camera);
@@ -162,8 +161,7 @@ int main(int argc, char** argv)
 	game.objects.push_back(&sMissile);
 
 	game.Init();
-
-	sMissile.Shoot(player.transform.position, glm::vec2(player.transform.size.x, player.transform.size.y / 2));
+	
 	SDL_Event windowEvent;
 	while (true)
 	{
@@ -188,7 +186,6 @@ int main(int argc, char** argv)
 		
 		game.Draw(deltaTime);
 
-		sMissile.DrawAnimating(renderer, 1, deltaTime);
 		SDL_GL_SwapWindow(window);
 
 	}

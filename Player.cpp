@@ -21,7 +21,7 @@ void Player::DrawPlayer(SpriteRenderer& renderer, float deltaTime)
 	Draw(renderer);
 }
 
-void Player::setPlayerState(PlayerState state)
+void Player::SetPlayerState(PlayerState state)
 {
 	// Get the frame coount to be used on an animation
 	// This is sorta harcoded for this specific project, and could count as a gambiarra
@@ -39,4 +39,15 @@ void Player::setPlayerState(PlayerState state)
 	
 	//std::cout << "spritePos: " << Sprite->getSpritePosition().x << " framesToAnim: " << abs(framesToAnim) << std::endl;
 	m_State = state;
+}
+
+void Player::shootMissile()
+{
+	glm::vec2 offset(transform.size.x, (transform.size.y / 2) - (m_Missile->transform.size.y/2));
+	m_Missile->Shoot(transform.position, offset);
+}
+
+void Player::setMissile(Projectile* missile)
+{
+	m_Missile = missile;
 }

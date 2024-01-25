@@ -8,7 +8,6 @@ public:
 
 	void DrawAnimating(SpriteRenderer& renderer, int numberOfFrames, float deltaTime, bool willLoop = true) override;
 	void Shoot(glm::vec2 startPosition, glm::vec2 offset);
-	void UpdateModelMatrix() override;
 
 private:
 	enum ProjectileState {

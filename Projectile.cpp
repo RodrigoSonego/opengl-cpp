@@ -30,18 +30,11 @@ void Projectile::DrawAnimating(SpriteRenderer& renderer, int numberOfFrames, flo
 
 void Projectile::Shoot(glm::vec2 startPosition, glm::vec2 offset)
 {
+	if (m_State != Inactive) { return; }
+
 	transform.position = glm::vec3(startPosition + offset, 0.0f);
 	setWillDraw(true);
 	m_State = Moving;
-}
-
-void Projectile::UpdateModelMatrix()
-{
-	if (m_State == Moving) {
-;
-	}
-
-	GameObject::UpdateModelMatrix();
 }
 
 void Projectile::Reset()
@@ -49,6 +42,9 @@ void Projectile::Reset()
 	setWillDraw(false);
 	m_elapsedTime = 0.0f;
 	m_State = Inactive;
+	Sprite = originalSprite;
+
+	Sprite->updateSpritePosition(glm::vec2(0.f));
 }
 
 void Projectile::Explode()

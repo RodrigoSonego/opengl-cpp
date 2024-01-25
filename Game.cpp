@@ -14,6 +14,10 @@ void Game::Init()
 {
 	//objects[0]->parent = &scrollPivot;
 	for (GameObject* obj : objects) {
+		if (Projectile* proj = dynamic_cast<Projectile*>(obj)) {
+			continue;
+		}
+
 		obj->parent = &scrollPivot;
 	}
 }
@@ -25,14 +29,14 @@ void Game::ProcessInput(float deltaTime, SDL_Event ev)
 
 	if (keyState[SDL_SCANCODE_W]) {
 		m_Player->transform.position.y -= m_Player->Velocity.y * deltaTime;
-		m_Player->setPlayerState(Player::MovingUp);
+		m_Player->SetPlayerState(Player::MovingUp);
 	}
 	else if (keyState[SDL_SCANCODE_S]) {
 		m_Player->transform.position.y += m_Player->Velocity.y * deltaTime;
-		m_Player->setPlayerState(Player::MovingDown);
+		m_Player->SetPlayerState(Player::MovingDown);
 	}
 	else {
-		m_Player->setPlayerState(Player::Idle);
+		m_Player->SetPlayerState(Player::Idle);
 	}
 
 	if (keyState[SDL_SCANCODE_D]) {
@@ -40,6 +44,10 @@ void Game::ProcessInput(float deltaTime, SDL_Event ev)
 	}
 	else if (keyState[SDL_SCANCODE_A]) {
 		m_Player->transform.position.x -= m_Player->Velocity.x * deltaTime;
+	}
+
+	if (keyState[SDL_SCANCODE_SPACE]) {
+		m_Player->shootMissile();
 	}
 
 	float maxY = 600 - m_Player->transform.size.y;
