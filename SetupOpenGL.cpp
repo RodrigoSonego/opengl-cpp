@@ -74,6 +74,7 @@ int main(int argc, char** argv)
 	Texture weaponTex("res/textures/graphics/PUWeapon.bmp", GL_RGB);
 	Texture missileTex("res/textures/graphics/missile.bmp", GL_RGB);
 	Texture explosionTex("res/textures/graphics/explode16.bmp", GL_RGB);
+	Texture paralaxTex("res/textures/graphics/Blocks.bmp", GL_RGB);
 
 	std::vector<GameObject*> gameObjects;
 
@@ -92,6 +93,7 @@ int main(int argc, char** argv)
 	SubTexture weaponSprite = SubTexture::createFromIndexes(&weaponTex, glm::vec2(0.f), glm::vec2(32.f));
 	SubTexture sMissileSprite = SubTexture::createFromIndexes(&missileTex, glm::vec2(0.f), glm::vec2(16.f));
 	SubTexture explosionSprite = SubTexture::createFromIndexes(&explosionTex, glm::vec2(0.f), glm::vec2(16.f));
+	SubTexture palaraxSprite = SubTexture::createFromIndexes(&paralaxTex, glm::vec2(0.f, 16), glm::vec2(192.f, 96.f));
 
 #pragma endregion
 
@@ -113,7 +115,8 @@ int main(int argc, char** argv)
 	Projectile sMissile(sMissileSprite, glm::vec3(getRandomPos(), 0.3f), glm::vec2(40.0f), 1.5f, explosionSprite,
 		90.f, glm::vec3(1.f), glm::vec2(250.f, 0.f));
 
-
+	GameObject paralaxWall1(palaraxSprite, glm::vec3(200.f, 350.f, -0.1f), glm::vec2(400.0f, 350.f));
+	GameObject paralaxWall2(palaraxSprite, glm::vec3(800.f, -100.f, -0.1f), glm::vec2(500.0f, 450.f));
 #pragma endregion
 
 #pragma region Camera
@@ -163,6 +166,9 @@ int main(int argc, char** argv)
 	game.objects.push_back(&shieldObj);
 	game.objects.push_back(&weaponObj);
 	game.objects.push_back(&sMissile);
+
+	game.ParalaxObjects.push_back(&paralaxWall1);
+	game.ParalaxObjects.push_back(&paralaxWall2);
 
 	game.Init();
 	

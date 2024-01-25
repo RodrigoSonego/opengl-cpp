@@ -8,6 +8,9 @@
 #include <vector>
 #include "TextRenderer.h"
 
+
+#define SCROLL_SPEED 50
+#define PARALAX_SPEED 15
 class Game
 {
 public:
@@ -20,13 +23,15 @@ public:
 
 	std::vector<GameObject*> objects;
 
+	std::vector<GameObject*> ParalaxObjects;
 private:
 	SpriteRenderer m_Renderer;
 	TextRenderer m_textRenderer;
 	Player* m_Player;
 	Camera& m_Camera;
 
-	Transform scrollPivot;
+	Transform m_ScrollPivot;
+	Transform m_ParalaxPivot;
 
 	Texture m_Background;
 

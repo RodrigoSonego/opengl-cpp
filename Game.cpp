@@ -5,9 +5,11 @@
 #include <algorithm>
 
 Game::Game(Player* player, SpriteRenderer renderer, TextRenderer textRenderer, Texture background, Camera camera)
-	: m_Player(player), m_Renderer(renderer), m_textRenderer(textRenderer), m_Background(background), m_Camera(camera)
+	: m_Player(player), m_Renderer(renderer), m_textRenderer(textRenderer),
+	m_Background(background), m_Camera(camera)
 {
-	scrollPivot.position = glm::vec3(0.0f);
+	m_ScrollPivot.position = glm::vec3(0.0f);
+	m_ParalaxPivot.position = glm::vec3(0.0f);
 }
 
 void Game::Init()
@@ -17,7 +19,11 @@ void Game::Init()
 			continue;
 		}
 
-		obj->parent = &scrollPivot;
+		obj->parent = &m_ScrollPivot;
+	}
+
+	for (GameObject* obj : ParalaxObjects) {
+		obj->parent = &m_ParalaxPivot;
 	}
 }
 
@@ -60,9 +66,15 @@ void Game::ProcessInput(float deltaTime, SDL_Event ev)
 void Game::Update(float deltaTime)
 {
 	m_Player->UpdateModelMatrix();
-	scrollPivot.position.x -= 50 * deltaTime;
+	m_ScrollPivot.position.x -= SCROLL_SPEED * deltaTime;
+	m_ParalaxPivot.position.x -= PARALAX_SPEED * deltaTime;
 
 	for (GameObject* obj : objects)
+	{
+		obj->UpdateModelMatrix();
+	}
+
+	for (GameObject* obj : ParalaxObjects)
 	{
 		obj->UpdateModelMatrix();
 	}
@@ -72,6 +84,11 @@ void Game::Draw(float deltaTime)
 {
 	DrawText();
 
+	for (GameObject* obj : ParalaxObjects)
+	{
+		obj->Draw(m_Renderer);
+	}
+
 	m_Player->DrawPlayer(m_Renderer, deltaTime);
 
 	for (GameObject* obj : objects)
@@ -80,7 +97,6 @@ void Game::Draw(float deltaTime)
 	}
 
 	m_Renderer.RenderSprite(&m_Background, glm::vec3(0.0f, 0.0f, -0.2f), glm::vec2(800.0f, 600.f), 0.0f);
-	
 }
 
 void Game::DrawText()
